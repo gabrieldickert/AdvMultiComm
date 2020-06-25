@@ -1,0 +1,7 @@
+Endpunkte:
+Streaming von Datei x (mit Dateiendung): /stream/x
+Alle Tracks holen: /tracklist
+	Beispielinhalt:
+	1.mp3
+	2.mp3
+	...
