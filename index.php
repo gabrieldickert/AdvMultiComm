@@ -43,7 +43,7 @@
 </div>
 <main role="main" class="container">
 <?php
-	$music = explode("|",file_get_contents("http://localhost:3000/files"));
+	$music = explode("|",file_get_contents("http://".$_SERVER['SERVER_NAME'].":3000/files"));
 	
 	$string = '<table class="table"><thead class="thead-dark"><tr><th>Song - Name</th><th>Abspielen</th><th>Playlist</th></tr></thead>';
 	for($i=0; $i<count($music); $i++)

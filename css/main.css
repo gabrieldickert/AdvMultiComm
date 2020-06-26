@@ -21,6 +21,7 @@ body > .container {
   border-radius:5px;
   background-color:#e5e5e5;
 }
+
 .playlist {
 	margin-top:60px;
 	padding:10px;
@@ -49,6 +50,19 @@ i.fa:hover {
 }
 .minus {
 	background-color:#ff0000;
+}
+.card {
+	margin:20px;
+	display:inline-block;
+	border-radius:5px;
+}
+.card-img-top {
+	width:64px;
+	height:64px;
+	margin-top:-32px;
+}
+.card-body {
+	margin-top:-10px;
 }
 .plus:hover {
 	background-color:#51a9ff;
