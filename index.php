@@ -45,7 +45,7 @@
 <?php
 	$music = explode("|",file_get_contents("http://localhost:3000/files"));
 	
-	$string = '<table><tr><th>Song - Name</th><th>Abspielen</th><th>Playlist</th></tr>';
+	$string = '<table class="table"><thead class="thead-dark"><tr><th>Song - Name</th><th>Abspielen</th><th>Playlist</th></tr></thead>';
 	for($i=0; $i<count($music); $i++)
 	{
 		$string .= '<tr><td>'.$music[$i].'</td><td><i onclick="playSong(\''.$music[$i].'\');" class="fa fa-play play"></i></td><td><i onclick="addSong(\''.$music[$i].'\');" class="fa fa-plus play"></i></td></tr>';
