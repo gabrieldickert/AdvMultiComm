@@ -8,13 +8,15 @@ body {
 
 #chat-box {
 	overflow:auto;
-	width:80%;
+	width:98%;
 	padding:10px;
 	border:1px solid #888;
 	border-radius:5px;
 	height:200px;
 	margin-left:auto;
 	margin-right:auto;
+	white-space: nowrap;
+	text-align:left;
 }
 .footer {
   position: absolute;
@@ -32,17 +34,28 @@ body > .container {
   border-radius:5px;
   background-color:#e5e5e5;
 }
-
-.playlist {
-	margin-top:60px;
+.song_list {
+	position:absolute;
+	top:115px;
 	padding:10px;
 	width:15%;
 	padding-bottom:50px;
 	min-height:300px;
 	border-radius:5px;
 	background-color:#e5e5e5;
+	text-align:center;
+	right:4%;
+}
+.playlist {
+	margin-top:60px;
+	padding:10px;
+	width:18%;
+	padding-bottom:50px;
+	min-height:300px;
+	border-radius:5px;
+	background-color:#e5e5e5;
 	position:absolute;
-	left:4%;
+	left:3%;
 	text-align:center;
 }
 #inner_playlist {
@@ -116,25 +129,43 @@ nav li {
 	margin-left:10px;
 	margin-right:10px;
 }
-table {
+.table_play {
 	margin-left:auto;
 	margin-right:auto;
+	width:85%;
 	border-collapse:collapse;
 	border:1px solid black;
-	width:85%;
+}
+.music_control {
+	margin-left:auto;
+	margin-right:auto;
+	width:50%;
 }
 td,th,tr {
 	text-align:center;
-	border:1px solid black;
 }
-td {
+.music_control td {
 	line-height:50px;
+	padding:20px;
 	vertical-align:middle;
 }
-tr {
-	background-color:#fcfcfc;
+.table_play td {
+	line-height:20px;
+	vertical-align:middle;
+	border:1px solid black;
 }
-td:hover {
+.table_play tr {
+	border:1px solid black;
+}
+.table_play td:hover {
 	cursor:pointer;
-	background-color:#e5e5e5;
+	background:#eee;
+}
+.online-icon {
+	border-radius:50%;
+	width:16px;
+	height:16px;
+	position:absolute;
+	left:10px;
+	top:10px;
 }

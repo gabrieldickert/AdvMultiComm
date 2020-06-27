@@ -1,16 +1,19 @@
 var playlist_add, playlist_title, inner_playlist,player,info;
 var Playlist=[];
 window.onload = function() {
-	playlist_add = document.getElementById("playlist_add");
-	playlist_title = document.getElementById("playlist_title");
+	if(document.getElementById("playlist_add")) playlist_add = document.getElementById("playlist_add");
+	if(document.getElementById("playlist_title")) playlist_title = document.getElementById("playlist_title");
 	inner_playlist = document.getElementById("inner_playlist");
 	player = document.getElementById("player");
 	info = document.getElementById("song_info");
 	
-	playlist_title.onkeydown = function(e) {
-		if(e.keyCode == 13) add_playlist();
-	};
-	playlist_add.onclick = add_playlist;
+	if(playlist_title)
+	{
+		playlist_title.onkeydown = function(e) {
+			if(e.keyCode == 13) add_playlist();
+		};
+		playlist_add.onclick = add_playlist;
+	}
 	
 	loadPlaylist();
 	showPlaylist();
@@ -66,7 +69,7 @@ function showPlaylist() {
 		inner_playlist.innerHTML = "- Noch keine vorhanden.";
 		return;
 	}
-	var string = "<table>";
+	var string = "<table class='table_play'>";
 	for(let i=0; i<Playlist.length; i++)
 	{
 		string += "<tr><td onclick='detailPlaylist("+i+");' style='width:70%;'>"+Playlist[i][0]+'</td><td><i onclick="playPlaylist('+i+');" class="fa fa-play play"></i></td><td><i onclick="del_playlist('+i+');" class="fa fa-minus minus"></i></td></tr>';
@@ -84,7 +87,7 @@ function detailPlaylist(x) {
 	if(Playlist[x][1].length != 0)
 	{
 	
-		string = "<table>";
+		string = "<table class='table_play'>";
 		for(let i=0; i<Playlist[x][1].length; i++)
 		{
 			string += "<tr><td style='width:70%;'>"+Playlist[x][1][i]+'</td><td><i onclick="playSong(\''+Playlist[x][1][i]+'\','+x+');" class="fa fa-play play"></i></td><td><i onclick="del_song('+x+','+i+');" class="fa fa-minus minus"></i></td></tr>';

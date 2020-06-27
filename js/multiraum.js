@@ -33,19 +33,19 @@ function refresh_rooms() {
 			var infos = JSON.parse(data);
 			for(let i=0; i<infos.length; i++)
 			{
-				addCard(infos[i][0], infos[i][1]);
+				addCard(infos[i][0], infos[i][1], i);
 			}
 		}
 	});
 }
 
-function addCard(name, title) {
+function addCard(name, title, x) {
 	cards.innerHTML += '<div class="card" style="width: 18rem;"> \
 <img class="card-img-top" src="img/note.png" alt="Card image cap"> \
   <div class="card-body"> \
     <h5 class="card-title">'+name+'</h5>\
     <p class="card-text">'+title+'</p>\
-    <a href="#" class="btn btn-primary">Raum betreten</a>\
+    <a href="room.php?id='+x+'" class="btn btn-primary">Raum betreten</a>\
   </div>\
 </div>';
 }

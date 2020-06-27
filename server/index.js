@@ -86,13 +86,13 @@ const wsServer = new WebsocketServer({ httpServer: server });
 wsServer.on('request', function(request) {
 	const c = request.accept(null, request.origin);
 	c.on('message', function(message) {
-		const x = message.split("|"); //example: c|channelID (to enter) ~ a|channelID|msg (to send msg)
+		const x = message.utf8Data.split("|"); //example: c|channelID (to enter) ~ a|channelID|msg (to send msg)
 		const cID = parseInt(x[1]);
 		switch(x[0]) {
 			case 'c': {
-				if(rooms.length < cID) rooms.push([c]);
+				if(rooms.length < cID+1) rooms.push([c]);
 				else rooms[cID].push(c);
-				c.sendUTF('Welcome to channel ' + cID);
+				c.sendUTF('Welcome in room ' + cID);
 				break; 
 			}
 			case 'a': {
