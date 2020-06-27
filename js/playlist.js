@@ -34,15 +34,23 @@ function playNextSong(old,p) {
 	return 1;
 }
 
-function playSong(name,p=-1) {
+function playSong(name,p=-1,sync=true,seek=0) {
 	player.src = "http://"+window.location.hostname+":3000/stream/"+name;
+	if(seek != 0)
+	{
+		player.currentTime = seek;
+	}
 	player.play();
+	if(sync && typeof syncPlayer !== "undefined") syncPlayer(name,p);
 	if(p == -1) info.innerHTML = name;
 	else {
-		info.innerHTML = "Playlist: "+Playlist[p][0]+" - "+name;
-		player.onended = function() {
-			playNextSong(name,p);
-		};
+		info.innerHTML = "Playlist: "+((!sync)?p:Playlist[p][0])+" - "+name;
+		if(sync)
+		{
+			player.onended = function() {
+				playNextSong(name,p);
+			};
+		}
 	}
 	info.style.display = "block";
 }

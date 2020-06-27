@@ -81,6 +81,8 @@ const WebsocketServer = require('websocket').server;
 
 var rooms = [];
 
+var music = [];
+
 const wsServer = new WebsocketServer({ httpServer: server });
 
 wsServer.on('request', function(request) {
@@ -92,13 +94,25 @@ wsServer.on('request', function(request) {
 			case 'c': {
 				if(rooms.length < cID+1) rooms.push([c]);
 				else rooms[cID].push(c);
-				c.sendUTF('Welcome in room ' + cID);
+				c.sendUTF('<Willkommen in Raum ' + cID);
 				break; 
 			}
 			case 'a': {
 				for(var i=0; i<rooms[cID].length; i++) {
-					rooms[cID][i].sendUTF(x[2]);
+					rooms[cID][i].sendUTF("<"+x[2]);
 				}
+				break;
+			}
+			case 'p': {
+				music[cID] = [x[2],x[3],+new Date()];
+				for(var i=0; i<rooms[cID].length; i++) {
+					rooms[cID][i].sendUTF(">"+x[2]+"|"+x[3]);
+				}
+				break;
+			}
+			case 's': {
+				if(music.length <= cID) return;
+				c.sendUTF("%"+music[cID][0]+"|"+music[cID][1]+"|"+Math.round(((+new Date())-music[cID][2])/1000));
 				break;
 			}
 		}

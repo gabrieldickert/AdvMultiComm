@@ -26,15 +26,40 @@ var websocket = new WebSocket("ws://"+window.location.host+":3000");
 websocket.onopen = function(ev) {
 	document.getElementById("oIcon").src = "img/online.png";
 	websocket.send("c|"+channelID);
+	websocket.send("s|"+channelID);
 };
 websocket.onclose = websocket.onerror = function(ev) {
 	document.getElementById("oIcon").src = "img/offline.png";
 	console.log("Error: "+ev);
 };
 websocket.onmessage = function(ev) {
-	document.getElementById("chat-box").innerHTML += "<b>"+getStamp()+"</b>&nbsp;"+decodeURI(ev.data)+"<hr>";
-	$('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
+	const c = ev.data.charAt(0);
+	var data = ev.data.substr(1,ev.data.length);
+	switch(c)
+	{
+		case '<': {
+			document.getElementById("chat-box").innerHTML += "<b>"+getStamp()+"</b>&nbsp;"+decodeURI(data)+"<hr>";
+			$('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
+			break;
+		}
+		case '>': {
+			var tmp = data.split("|");
+			playSong(tmp[0], tmp[1], false);
+			break;
+		}
+		case '%': {
+			var tmp = data.split("|");
+			playSong(tmp[0], tmp[1], false, tmp[2]);
+			break;
+		}
+	}
 };
+
+function syncPlayer(name,p) {
+	websocket.send("p|"+channelID+"|"+name+"|"+((p!=-1)?(Playlist[p][0]):-1));
+}
+
+
 function getStamp()
 {
 	var d = new Date();
