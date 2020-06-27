@@ -19,7 +19,11 @@ function createRoom() {
 		data: JSON.stringify( { name: raum_name.value, info: raum_beschreibung.value } ),
 		contentType: "application/json; charset=utf-8",
 		dataType: "json"
-	}).done(refresh_rooms);
+	}).done(function() {
+		raum_name.value = '';
+		raum_beschreibung.value = '';
+		refresh_rooms();
+	});
 }
 
 function refresh_rooms() {
