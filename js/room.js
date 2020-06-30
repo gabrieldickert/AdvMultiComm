@@ -1,6 +1,8 @@
 const channelID = parseInt(window.location.href.split("=")[1]);
 
 function con_up(x,v) {
+    
+
 	document.getElementById("s"+x).innerHTML = v;
 }
 

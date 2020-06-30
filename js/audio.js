@@ -6,6 +6,8 @@ $('document').ready(function (e) {
 
 
     var audioCtx = null;
+    var track = null;
+    var gainNode = null;
 
 
 
@@ -28,6 +30,49 @@ $('document').ready(function (e) {
 
     });
 
+
+    $('#volume_slider').on('input', function (e) {
+
+        var current_val = $('#volume_slider').val();
+        var applied_gain = current_val / 100;
+
+
+        gainNode.gain.value = applied_gain;
+
+        track.connect(gainNode).connect(audioCtx.destination);
+
+
+
+
+
+
+
+
+
+    });
+
+
+
+
+    function addVolumeToAudioCtx() {
+        gainNode = audioCtx.createGain();
+        gainNode.gain.value = 1;
+    }
+
+
+
+    function onVolumeChanged(value) {
+
+        gainNode.gain.value = 0.1;
+
+
+        console.log("Volume Change");
+
+
+
+
+    }
+
     /**
      * Inits a new Audio Context
      */
@@ -39,15 +84,9 @@ $('document').ready(function (e) {
         let  audioElement = document.querySelector('audio');
 
 
-        console.log(audioElement);
-        let track = audioCtx.createMediaElementSource(audioElement);
+        track = audioCtx.createMediaElementSource(audioElement);
 
-
-        var gainNode = audioCtx.createGain();
-
-
-        gainNode.gain.value = 0.1;
-
+        addVolumeToAudioCtx();
 
         // connect our graph
         track.connect(gainNode).connect(audioCtx.destination);
