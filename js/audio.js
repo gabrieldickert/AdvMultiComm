@@ -1,28 +1,16 @@
 $('document').ready(function (e) {
 
 
-
-
-
-
+    /**
+     * Global Variables
+     * 
+     */
     var audioCtx = null;
     var analyser = null;
     var track = null;
     var gainNode = null;
     var panner = null;
-
-
-
-    // const context = new AudioContext();
-
-    /*   function playSound() {
-     const source = context.createBufferSource();
-     source.buffer = dogBarkingBuffer;
-     source.connect(context.destination);
-     source.start(0);
-     }*/
-
-
+    var track = null;
 
 
     $('#init-btn').on('click', function (e) {
@@ -43,7 +31,6 @@ $('document').ready(function (e) {
 
         gainNode.gain.value = applied_gain;
 
-        //track.connect(gainNode).connect(audioCtx.destination);
 
 
     });
@@ -54,6 +41,13 @@ $('document').ready(function (e) {
         onPanningChanged($('#panner_slider').val());
 
 
+    });
+
+
+    $('#lowpass_slider').on('input', function (e) {
+
+
+        stop();
     });
 
 
@@ -103,7 +97,10 @@ $('document').ready(function (e) {
 
     }
 
-
+    /**
+     * Applies the panning Volume to the Audiocontext
+     * @param float 
+     */
     function onPanningChanged(value) {
 
         panner.pan.value = value;
@@ -146,55 +143,48 @@ $('document').ready(function (e) {
     }
 
 
+
+    function stop() {
+
+        audioCtx.suspend();
+    }
+
+
+    function resume() {
+
+
+        audioCtx.resume();
+    }
+
+
+
     function analyseBytes() {
-
-
-        //const source = audioCtx.createMediaStreamSource( document.querySelector('audio'));
-
-
-        //console.log(source);
-
-
-
-
-
-
 
         setInterval(function () {
             var bufferLength = analyser.frequencyBinCount;
-           // console.log(bufferLength);
+            // console.log(bufferLength);
             var dataArray = new Uint8Array(bufferLength);
-
-
             analyser.getByteFrequencyData(dataArray);
-            console.log(dataArray);
+            // console.log(dataArray);
             drawSound(dataArray);
         }, 50);
-        //get the latest buffer that should play next
-        // source.buffer = audiobuffer.shift();
-        // source.connect(context.destination);
-
-
-        //var analyser = audioCtx.createAnalyser();
-        //var dataArray = new Uint8Array(analyser.frequencyBinCount); // Uint8Array should be the same length as the frequencyBinCount 
-
-
-
-        // void analyser.getByteFrequencyData(dataArray); // fill the
-
-
-        ///console.log(dataArray);
     }
-
+    
+    
+    /**
+     * Draws a simple Visualizer for the Audio
+     * @param array Array containing unsigned Bytes from the current Audiostream
+     * @returns {undefined}
+     */
     function drawSound(dataArray) {
+
+        let width = 300;
+        let height = 400;
 
         let canvasCtx = document.getElementById("audio_visual_player").getContext('2d');
         canvasCtx.fillStyle = 'rgb(0, 0, 0)';
         canvasCtx.fillRect(0, 0, 300, 400);
-
-
         let bufferLength = 128;
-
         var barWidth = (300 / bufferLength) * 2.5;
         var barHeight;
         var x = 0;
@@ -202,7 +192,7 @@ $('document').ready(function (e) {
         for (var i = 0; i < bufferLength; i++) {
             barHeight = dataArray[i];
 
-            canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ','+ (barHeight + 100)+','+ (barHeight + 100)+')';
+            canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',' + (barHeight / 1.5 + 70) + ',' + (barHeight / 2 + 30) + ')';
             canvasCtx.fillRect(x, 400 - barHeight / 2, barWidth, barHeight / 2);
 
             x += barWidth + 1;

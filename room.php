@@ -75,7 +75,7 @@ Ihr Browser kann dieses Tondokument nicht wiedergeben.
 <table class="music_control">
 <tr><td><b>Volume:</b></td><td><input id="volume_slider"type="range" step="1"  min="1" max="100" value="50" class="slider"></td><td id="s0">50</td></tr>
 <tr><td><b>Panning:</b></td><td><input id="panner_slider"type="range" step="0.01"  min="-1" max="1" value="0" class="slider"></td><td id="s1">0</td></tr>
-<tr><td><b>LowPassFilter:</b></td><td><input type="range" step="1" oninput="con_up(2,this.value);" onchange="con_up(2,this.value);" min="1" max="100" value="50" class="slider"></td><td id="s2">50</td></tr>
+<tr><td><b>LowPassFilter:</b></td><td><input id="lowpass_slider" input type="range" step="1" oninput="con_up(2,this.value);" onchange="con_up(2,this.value);" min="1" max="100" value="50" class="slider"></td><td id="s2">50</td></tr>
 <tr><td><b>HighPassFilter:</b></td><td><input type="range" step="1" oninput="con_up(3,this.value);" onchange="con_up(3,this.value);" min="1" max="100" value="50" class="slider"></td><td id="s3">50</td></tr>
 </table>
 
