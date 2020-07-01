@@ -21,6 +21,7 @@
 <title><?php echo $project; ?></title>
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <link href="css/bootstrap.min.css" rel="stylesheet">
 <link href="css/room.css" rel="stylesheet">
 </head>
@@ -58,20 +59,24 @@
 </div>
 
 <main role="main" class="container text-center">
-<audio id="player" style="margin-left:auto;margin-right:auto;display:block;" 
+<audio  id="player" style="margin-left:auto;margin-right:auto;display:block;" 
   controls
   src="-" 
+  crossorigin="anonymous"
   type="audio/mp3" 
 >
 Ihr Browser kann dieses Tondokument nicht wiedergeben.
 </audio>
+    
+    <canvas id="audio_visual_player" width="300px" height="400px"></canvas>
 <p class="text-center" id="song_info" style="margin-top:30px;margin-bottom:-10px;font-weight:bold;display:none;">Playlist: abc - bird3.mp3</p>
 <hr>
+<button id="init-btn">Start WEB-Audio-API</button>
 <table class="music_control">
-<tr><td><b>Bass:</b></td><td><input type="range" step="1" oninput="con_up(0,this.value);" onchange="con_up(0,this.value);" min="1" max="100" value="50" class="slider"></td><td id="s0">50</td></tr>
-<tr><td><b>Einstellung2:</b></td><td><input type="range" step="1" oninput="con_up(1,this.value);" onchange="con_up(1,this.value);" min="1" max="100" value="50" class="slider"></td><td id="s1">50</td></tr>
-<tr><td><b>Einstellung3:</b></td><td><input type="range" step="1" oninput="con_up(2,this.value);" onchange="con_up(2,this.value);" min="1" max="100" value="50" class="slider"></td><td id="s2">50</td></tr>
-<tr><td><b>Einstellung4:</b></td><td><input type="range" step="1" oninput="con_up(3,this.value);" onchange="con_up(3,this.value);" min="1" max="100" value="50" class="slider"></td><td id="s3">50</td></tr>
+<tr><td><b>Volume:</b></td><td><input id="volume_slider"type="range" step="1"  min="1" max="100" value="50" class="slider"></td><td id="s0">50</td></tr>
+<tr><td><b>Panning:</b></td><td><input id="panner_slider"type="range" step="0.01"  min="-1" max="1" value="0" class="slider"></td><td id="s1">0</td></tr>
+<tr><td><b>LowPassFilter:</b></td><td><input type="range" step="1" oninput="con_up(2,this.value);" onchange="con_up(2,this.value);" min="1" max="100" value="50" class="slider"></td><td id="s2">50</td></tr>
+<tr><td><b>HighPassFilter:</b></td><td><input type="range" step="1" oninput="con_up(3,this.value);" onchange="con_up(3,this.value);" min="1" max="100" value="50" class="slider"></td><td id="s3">50</td></tr>
 </table>
 
 </main>
@@ -105,5 +110,6 @@ Ihr Browser kann dieses Tondokument nicht wiedergeben.
 <?php echo getFooter($project); ?>
 <script src="js/room.js"></script>
 <script src="js/playlist.js"></script>
+<script src="js/audio.js"></script>
 </body>
 </html>
