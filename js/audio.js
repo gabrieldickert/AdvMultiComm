@@ -1,6 +1,9 @@
 $('document').ready(function (e) {
 
 
+
+
+
     /**
      * Global Variables
      * 
@@ -12,18 +15,29 @@ $('document').ready(function (e) {
     var panner = null;
     var track = null;
 
+    initCanvasForAudioPreview();
 
-    $('#init-btn').on('click', function (e) {
 
-        console.log("Button Click");
+
+    $('#inner_playlist').on('click', function (e) {
+
         initAudioCtx();
 
     });
 
 
+    /*$('#init-btn').on('click', function (e) {
+     
+     console.log("Button Click");
+     initAudioCtx();
+     
+     });*/
+
+
+
     $('#volume_slider').on('input', function (e) {
 
-        analyseBytes();
+
 
         var current_val = $('#volume_slider').val();
         var applied_gain = current_val / 100;
@@ -109,33 +123,40 @@ $('document').ready(function (e) {
 
     }
 
+
+
     /**
      * Inits a new Audio Context
      */
     function initAudioCtx() {
 
 
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        analyser = audioCtx.createAnalyser();
-
-        analyser.fftSize = 256;
+        if (audioCtx == null) {
 
 
 
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+            analyser = audioCtx.createAnalyser();
 
-        let  audioElement = document.querySelector('audio');
+            analyser.fftSize = 256;
 
-        track = audioCtx.createMediaElementSource(audioElement);
+            let  audioElement = document.querySelector('audio');
 
+            track = audioCtx.createMediaElementSource(audioElement);
 
-        //Adding Nodes to the Audiocontext
-        addVolumeToAudioCtx();
-        addPanerToAudioCtx();
+            //Adding Nodes to the Audiocontext
+            addVolumeToAudioCtx();
+            addPanerToAudioCtx();
 
-        // connect our graph
-        track.connect(analyser).connect(gainNode).connect(panner).connect(audioCtx.destination);
+            // connect our graph
+            track.connect(analyser).connect(gainNode).connect(panner).connect(audioCtx.destination);
+
+            analyseBytes();
+
+        }
+
 
 
 
@@ -144,13 +165,13 @@ $('document').ready(function (e) {
 
 
 
-    function stop() {
+    function stopAudio() {
 
         audioCtx.suspend();
     }
 
 
-    function resume() {
+    function resumeAudio() {
 
 
         audioCtx.resume();
@@ -169,8 +190,21 @@ $('document').ready(function (e) {
             drawSound(dataArray);
         }, 50);
     }
-    
-    
+
+
+
+
+    function initCanvasForAudioPreview() {
+
+     
+        let width = 300;
+        let height = 150;
+        let canvasCtx = document.getElementById("audio_visual_player").getContext('2d');
+        canvasCtx.fillStyle = 'rgb(0, 0, 0)';
+        canvasCtx.fillRect(0, 0, width, height);
+
+    }
+
     /**
      * Draws a simple Visualizer for the Audio
      * @param array Array containing unsigned Bytes from the current Audiostream
@@ -179,11 +213,11 @@ $('document').ready(function (e) {
     function drawSound(dataArray) {
 
         let width = 300;
-        let height = 400;
+        let height = 150;
 
         let canvasCtx = document.getElementById("audio_visual_player").getContext('2d');
         canvasCtx.fillStyle = 'rgb(0, 0, 0)';
-        canvasCtx.fillRect(0, 0, 300, 400);
+        canvasCtx.fillRect(0, 0, width, height);
         let bufferLength = 128;
         var barWidth = (300 / bufferLength) * 2.5;
         var barHeight;
@@ -193,7 +227,7 @@ $('document').ready(function (e) {
             barHeight = dataArray[i];
 
             canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',' + (barHeight / 1.5 + 70) + ',' + (barHeight / 2 + 30) + ')';
-            canvasCtx.fillRect(x, 400 - barHeight / 2, barWidth, barHeight / 2);
+            canvasCtx.fillRect(x, height - barHeight / 2, barWidth, barHeight / 2);
 
             x += barWidth + 1;
         }

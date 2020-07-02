@@ -40,6 +40,7 @@ function playSong(name,p=-1,sync=true,seek=0) {
 	{
 		player.currentTime = seek;
 	}
+       
 	player.play();
 	if(sync && typeof syncPlayer !== "undefined") syncPlayer(name,p);
 	if(p == -1) info.innerHTML = name;
@@ -53,6 +54,10 @@ function playSong(name,p=-1,sync=true,seek=0) {
 		}
 	}
 	info.style.display = "block";
+        
+        //Calling the Audio API from here
+        
+      
 }
 function addFinalSong(name, i) {
 	Playlist[i][1].push(name);
