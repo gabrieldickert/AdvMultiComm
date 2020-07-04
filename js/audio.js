@@ -233,6 +233,7 @@ $('document').ready(function (e) {
           
           if(visEvent.target.value==="frequencybars")
           { 
+            let canvasCtx = document.getElementById("audio_visual_player").getContext('2d');
             analyseBytes();
           }
           else if(visEvent.target.value==="sinewave")
