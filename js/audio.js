@@ -8,22 +8,157 @@ $('document').ready(function (e) {
     var gainNode = null;
     var panner = null;
     var biquadFilter = null;
-
     var canvas_interval_id = null;
-
     var frequenz_bar_interval_id = null;
-
     var sinuswave_interval_id = null;
+    var audio_times_interval_id = null;
+
+    const INTERVAL_REFRESH_MS_TIME = 50;
 
 
-    // const context = new AudioContext();
+    var isPaused = false;
+    var isPlaying = false;
+    var isMuted = false;
 
-    /*   function playSound() {
-     const source = context.createBufferSource();
-     source.buffer = dogBarkingBuffer;
-     source.connect(context.destination);
-     source.start(0);
-     }*/
+
+
+
+
+    //Addding Eventlistener on the Controlbutton
+    $('#audio-control-play-btn').on('click', function (e) {
+
+
+
+        if (isPlaying) {
+
+            $(this).find("i").removeClass("fa fa-play");
+
+            $(this).find("i").addClass("fa fa-pause");
+
+            pauseAudio();
+
+        } else if (isPaused) {
+
+
+            $(this).find("i").removeClass("fa fa-pause");
+
+            $(this).find("i").addClass("fa fa-play");
+
+            resumeAudio();
+        }
+
+    });
+
+
+    $('#audio-control-mute-btn').on('click', function (e) {
+
+
+
+        if (isMuted) {
+
+            $(this).find("i").removeClass("fa fa-volume-off");
+
+            $(this).find("i").addClass("fa fa-volume-up");
+
+            unmuteAudio();
+
+        } else {
+            $(this).find("i").removeClass("fa fa-volume-up");
+
+            $(this).find("i").addClass("fa fa-volume-off");
+
+            muteAudio();
+        }
+
+
+
+    });
+
+
+    $('#audio-control-unmute-btn').on('click', function (e) {
+
+
+        unmuteAudio();
+
+    });
+
+
+
+    $('#audio-time-progress-bar').on('click', function (e) {
+
+
+
+        //Clearing the current Intervall
+        // clearInterval(audio_times_interval_id);
+        let canvasCtx = document.getElementById("audio-time-progress-bar").getContext('2d');
+
+        canvasCtx.clearRect(0, 0, 250, 10);
+
+
+        let rect = canvasCtx.canvas.getBoundingClientRect();
+        let canvas_width = canvasCtx.canvas.width;
+        let canvas_height = canvasCtx.canvas.height;
+
+
+        let mouse_x = e.clientX;
+        let mouse_y = e.clientY;
+
+
+
+        let diff = rect.right - mouse_x;
+
+
+        let track_duration = Math.round(track.mediaElement.duration);
+        let current_time = Math.round(track.mediaElement.currentTime);
+
+        let prz = current_time / track_duration * 100;
+        
+        
+        let cax = 100 - (diff/250) *100;
+        
+        let audio_prz = track_duration / 100 * cax;
+        
+        
+
+        
+        
+        
+        console.log("PROZENTUALER FORTSCHRITT VOM SONG "+cax);
+        
+        
+        let player = document.getElementById("player");
+
+
+      player.currentTime = audio_prz;
+
+
+
+
+        console.log("DIFF" + diff);
+
+
+
+        /*  $('#player').bind('canplay', function () {
+         this.currentTime = 10;
+         });
+         */
+
+
+        // let player = document.getElementById("player");
+
+
+        //  player.currentTime = 5;
+
+
+
+        //  let prz = canvas_width /  rect.right-mouse_x *100;
+
+        //console.log("NEUER BUFFERWERT BEI" +prz+"%");
+        // console.log(e.clientX);
+
+    });
+
+
 
 
 
@@ -76,7 +211,7 @@ $('document').ready(function (e) {
 
 
 
-        }, 50);
+        }, INTERVAL_REFRESH_MS_TIME);
 
 
 
@@ -87,9 +222,7 @@ $('document').ready(function (e) {
 
     $('#init-btn').on('click', function (e) {
 
-        console.log("Button Click");
         initAudioCtx();
-        //waveGraph();
 
     });
 
@@ -166,6 +299,35 @@ $('document').ready(function (e) {
 
     }
 
+
+
+    function drawAudioProgressBar() {
+
+
+        let width = 250;
+        let height = 10;
+
+        let canvasCtx = document.getElementById("audio-time-progress-bar").getContext('2d');
+        canvasCtx.fillStyle = 'rgb(128, 128, 128)';
+        canvasCtx.fillRect(0, height / 2, width, height);
+
+
+        let track_duration = Math.round(track.mediaElement.duration);
+        let current_time = Math.round(track.mediaElement.currentTime);
+
+        let prz = current_time / track_duration * 100;
+        console.log(current_time / track_duration * 100);
+
+        canvasCtx.fillStyle = 'rgb(0, 0, 0)';
+
+        canvasCtx.fillRect(0, height / 2, width / 100 * prz, height);
+
+
+
+
+
+    }
+
     /**
      * Inits a new Audio Context
      */
@@ -173,6 +335,9 @@ $('document').ready(function (e) {
 
 
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+
+
 
         analyser = audioCtx.createAnalyser();
 
@@ -186,57 +351,61 @@ $('document').ready(function (e) {
         let  audioElement = document.querySelector('audio');
 
         track = audioCtx.createMediaElementSource(audioElement);
+
+
+
+
+
+        console.log(track);
         //Adding Nodes to the Audiocontext
 
         addVolumeToAudioCtx();
         addPanerToAudioCtx();
         //addBiquadFilter();
 
+
+
         // connect our graph
         track.connect(analyser).connect(gainNode).connect(panner).connect(biquadFilter).connect(audioCtx.destination);
+
+
+
+        //Enable Playing
+        isPlaying = true;
+
+
+
+        //Adding TimerHandler for Tracking the elpased Times in the Audio
+        audio_times_interval_id = setInterval(function (e) {
+
+
+            let track_duration = Math.round(track.mediaElement.duration);
+            let current_time = Math.round(track.mediaElement.currentTime);
+
+
+
+
+
+            $('#audio-time-informs').html(Math.floor(current_time / 60) + ":" + current_time % 60 + "/" + Math.round(track_duration / 60) + ":" + (track_duration % 60));
+
+            drawAudioProgressBar();
+
+        }, INTERVAL_REFRESH_MS_TIME);
 
 
     }
 
 
-
-
-    // addBiquadFilter()
-    // {
-    //   biquadFilter = audioCtx.createBiquadFilter();
-    //   biquadfilter.gain.value = 25;
-    // }
-
     function analyseBytes() {
 
 
-        //const source = audioCtx.createMediaStreamSource( document.querySelector('audio'));
-
-
-        //console.log(source);
-
-
-
         frequenz_bar_interval_id = setInterval(function () {
-
-
-            //analyser = audioCtx.createAnalyser();
             var bufferLength = analyser.frequencyBinCount;
-            // console.log(bufferLength);
             var dataArray = new Uint8Array(bufferLength);
-
-
             analyser.getByteFrequencyData(dataArray);
-            //console.log(dataArray);
             drawSound(dataArray);
-        }, 50);
-        //get the latest buffer that should play next
-        // source.buffer = audiobuffer.shift();
-        // source.connect(context.destination);
-        //var analyser = audioCtx.createAnalyser();
-        //var dataArray = new Uint8Array(analyser.frequencyBinCount); // Uint8Array should be the same length as the frequencyBinCount 
-        // void analyser.getByteFrequencyData(dataArray); // fill the
-        ///console.log(dataArray);
+        }, INTERVAL_REFRESH_MS_TIME);
+
     }
 
     function onBiquadFilter() {
@@ -334,6 +503,35 @@ $('document').ready(function (e) {
 
     function drawSound(dataArray) {
 
+        /*  var width = Math.floor(1 / this.freqs.length, 10);
+         
+         var canvas = document.getElementById("audio_visual_player").getContext('2d');
+         var drawContext = canvas.getContext('2d');
+         canvas.width = WIDTH;
+         canvas.height = HEIGHT;
+         // Draw the frequency domain chart.
+         for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
+         var value = this.freqs[i];
+         var percent = value / 256;
+         var height = HEIGHT * percent;
+         var offset = HEIGHT - height - 1;
+         var barWidth = WIDTH / this.analyser.frequencyBinCount;
+         var hue = i / this.analyser.frequencyBinCount * 360;
+         drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
+         drawContext.fillRect(i * barWidth, offset, barWidth, height);
+         }
+         
+         // Draw the time domain chart.
+         for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
+         var value = this.times[i];
+         var percent = value / 256;
+         var height = HEIGHT * percent;
+         var offset = HEIGHT - height - 1;
+         var barWidth = WIDTH / this.analyser.frequencyBinCount;
+         drawContext.fillStyle = 'white';
+         drawContext.fillRect(i * barWidth, offset, 1, 2);
+         }*/
+
         let canvasCtx = document.getElementById("audio_visual_player").getContext('2d');
         canvasCtx.fillStyle = 'rgb(0, 0, 0)';
         canvasCtx.fillRect(0, 0, 300, 400);
@@ -348,7 +546,13 @@ $('document').ready(function (e) {
         for (var i = 0; i < bufferLength; i++) {
             barHeight = dataArray[i];
 
-            canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',' + (barHeight + 100) + ',' + (barHeight + 100) + ')';
+
+            var hue = i / analyser.frequencyBinCount * 360;
+            canvasCtx.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
+
+            //canvasCtx.fillStyle = 'rgb(' + 255 + ',' + 0 + ',' + 0 + ')';
+
+
             canvasCtx.fillRect(x, 400 - barHeight / 2, barWidth, barHeight / 2);
 
             x += barWidth + 1;
@@ -358,7 +562,59 @@ $('document').ready(function (e) {
 
 
 
+    }
 
+
+
+    /**
+     * Stops the Audio
+     * 
+     */
+    function pauseAudio() {
+
+        audioCtx.suspend();
+
+        isPlaying = false;
+        isPaused = true;
+    }
+
+    /**
+     * Resumes the Audio
+     * 
+     */
+    function resumeAudio() {
+
+
+        audioCtx.resume();
+
+        isPaused = false;
+        isPlaying = true;
+    }
+
+    /**
+     * Mutes the Current Audio
+     * 
+     */
+    function muteAudio() {
+
+
+
+        gainNode.gain.value = 0;
+
+        isMuted = true;
+    }
+
+
+    /**
+     * Umutes the current Audio
+     * 
+     */
+    function unmuteAudio() {
+
+
+        gainNode.gain.value = 1;
+
+        isMuted = false;
 
     }
 
