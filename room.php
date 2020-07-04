@@ -86,8 +86,8 @@ Ihr Browser kann dieses Tondokument nicht wiedergeben.
               <option value="off" selected>Off</option>  
           </select>
         </td>
-        <td id="waves">
-          <select id="bars" placeholder="bars">
+        <td id="bars">
+          <select id="waves" placeholder="waves">
               <option value="sinewave">Sinewave</option>
               <option value="frequencybars" >Frequency bars</option>
               <option value="off" selected>Off</option>  
