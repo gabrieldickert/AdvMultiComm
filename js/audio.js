@@ -130,14 +130,14 @@ $('document').ready(function (e) {
 
         sinuswave_interval_id = setInterval(function (e) {
 
-            console.log("SINUS");
+
 
             var WIDTH = 300;
             var HEIGHT = 400;
             let canvasCtx = document.getElementById("audio_visual_player").getContext('2d');
             analyser.fftSize = 2048;
             var bufferLength = analyser.fftSize;
-            console.log(bufferLength);
+
             var dataArray = new Uint8Array(bufferLength);
 
             canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -198,18 +198,18 @@ $('document').ready(function (e) {
 
     $('#volume_slider').on('input', function (e) {
 
-       
 
-        var current_val = $('#volume_slider').val();
-        var applied_gain = current_val / 100;
-        
-        $('#s0').html(Math.floor(applied_gain*100)+"%");
+
+        let current_val = $('#volume_slider').val();
+        let applied_gain = current_val / 100;
+
+        $('#s0').html(Math.floor(applied_gain * 100) + "%");
 
 
         gainNode.gain.value = applied_gain;
-        
-        
-    
+
+
+
 
 
 
@@ -218,7 +218,13 @@ $('document').ready(function (e) {
 
     $('#panner_slider').on('input', function (e) {
 
-        onPanningChanged($('#panner_slider').val());
+
+        panner.pan.value = $('#panner_slider').val();
+        
+        
+        $('#s1').html($('#panner_slider').val());
+
+        //onPanningChanged($('#panner_slider').val());
 
 
     });
@@ -293,7 +299,7 @@ $('document').ready(function (e) {
         let current_time = Math.round(track.mediaElement.currentTime);
 
         let prz = current_time / track_duration * 100;
-        console.log(current_time / track_duration * 100);
+
 
         canvasCtx.fillStyle = 'rgb(0, 0, 0)';
 
@@ -344,8 +350,8 @@ $('document').ready(function (e) {
 
         // connect our graph
         track.connect(analyser).connect(gainNode).connect(panner).connect(biquadFilter).connect(audioCtx.destination);
-        
-        
+
+
 
 
 
@@ -371,7 +377,7 @@ $('document').ready(function (e) {
             drawAudioProgressBar();
 
         }, INTERVAL_REFRESH_MS_TIME);
-        
+
         //Calling the AnalyseBytes Function to Show the Audio
         analyseBytes();
 
