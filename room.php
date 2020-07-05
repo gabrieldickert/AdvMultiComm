@@ -100,7 +100,8 @@ Ihr Browser kann dieses Tondokument nicht wiedergeben.
         </tr>
 
 <tr><td><b>Property</b>
-    </td><td id="hf">
+    </td>
+    <td id="hf">
       <select id="property" placeholder="property">
                   <option value="property1">property1</option>
                   <option value="property2" >property2 bars</option>
@@ -113,10 +114,23 @@ Ihr Browser kann dieses Tondokument nicht wiedergeben.
                       <option value="off" selected>Off</option>  
                 </select>
             </td>
-                <td>
-                  <!---<input type="range" step="1" oninput="con_up(3,this.value);" onchange="con_up(3,this.value)> -->
-                </td>
+                <!--<td>
+                  -<input type="range" step="1" oninput="con_up(3,this.value);" onchange="con_up(3,this.value)
+                </td>-->
     
+    </tr>
+    <tr>
+      <td>
+        <b>Oscillator_wave</b>
+      </td>
+      <td>
+        <input id="Oscillator_wave"type="range" step="0.1"  min="20" max="1000" value="440" class="slider">  
+      </td>
+      <td>
+        <input type="text" id="freq" value="440" disabled>     
+      </td>
+      <td><input type="button" value="start" id="start"></td>
+      <td></td>
     </tr>
 </table>
 

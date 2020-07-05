@@ -14,6 +14,7 @@ $('document').ready(function (e) {
   var frequenz_bar_interval_id = null;
 
   var sinuswave_interval_id = null;
+  var oscillator=null;
 
 
   //Initializing the init Button
@@ -103,21 +104,60 @@ $('document').ready(function (e) {
     //creating a biQuadFiltermethod for the BiquadFilterNode
     biquadFilter = audioCtx.createBiquadFilter();
 
+    onOscillation();
+
     analyser.fftSize = 256;
 
     let audioElement = document.querySelector('audio');
 
     track = audioCtx.createMediaElementSource(audioElement);
+    
     //Adding Nodes to the Audiocontext
-
     addVolumeToAudioCtx();
     addPanerToAudioCtx();
-    //addBiquadFilter();
+
+
 
     // connect our graph
-    track.connect(analyser).connect(gainNode).connect(panner).connect(biquadFilter).connect(audioCtx.destination);
+    track.connect(analyser).connect(gainNode).connect(panner).connect(biquadFilter)/*.connect(oscillator)*/.connect(audioCtx.destination);
 
   }
+
+  function onOscillation(){
+
+    oscillator=audioCtx.createOscillator();
+    oscillator.connect(audioCtx.destination);
+    //oscillator.start(0);
+  }
+
+  var oscw = document.getElementById("Oscillator_wave");
+  oscw.onchange = function(oscwEvent){
+  var val= oscwEvent.target.value;
+
+  var freq= document.getElementById("freq");
+ 
+  freq.value=val;
+  oscillator.frequency.value=val;
+
+  
+ // oscillator.stop(1);
+
+}
+var oscstart= document.getElementById("start");
+oscstart.onclick = function(oscEvent)
+{
+  if (oscEvent.target.value==="start"){
+    oscillator.start(0);
+    oscEvent.target.value="stop";  
+  }
+  else
+  {
+  oscillator.stop(0);
+  oscEvent.target.value="start";
+  }
+}
+  
+
 
 
   //calling the function to create the Frequency Graph
@@ -197,13 +237,17 @@ $('document').ready(function (e) {
 
 
     //when convolver is selected it is connected back into the audio path
-    //  if(voiceSetting == "convolver") {
-    //    biquadFilter.disconnect(0);
-    //    biquadFilter.connect(convolver);
-    //  } else {
-    //    biquadFilter.disconnect(0);
-    //    biquadFilter.connect(gainNode);
-    //  }
+      
+    if(voiceSetting == "convolver") 
+      {
+        biquadFilter.disconnect(0);
+        biquadFilter.connect(convolver);
+      } 
+      else 
+      {
+        biquadFilter.disconnect(0);
+        biquadFilter.connect(gainNode);
+      }
 
 
     if (voiceSetting == "lowfrequency") {
@@ -220,7 +264,6 @@ $('document').ready(function (e) {
   }
 
 
-
   var voiceSelect = document.getElementById("BiQuadFilter");
 
   voiceSelect.onchange = function (oEvent) {
@@ -234,14 +277,11 @@ $('document').ready(function (e) {
   var visualSelect = document.getElementById("waves");
 
   visualSelect.onchange = function (visEvent) {
-    //debugger;
+  
     var WIDTH = 300;
     var HEIGHT = 400;
 
-    //audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    //analyser = audioCtx.createAnalyser();
-
-    if (visEvent.target.value === "frequencybars") {
+      if (visEvent.target.value === "frequencybars") {
       // clearInterval(frequenz_bar_interval_id);
       clearInterval(sinuswave_interval_id);
       analyseBytes();
@@ -264,6 +304,8 @@ $('document').ready(function (e) {
     }
 
   }
+
+
 
   function drawSound(dataArray) {
 
