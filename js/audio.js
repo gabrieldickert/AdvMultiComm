@@ -84,6 +84,7 @@ $('document').ready(function (e) {
 
 
 
+
     $('#audio-time-progress-bar').on('click', function (e) {
 
 
@@ -106,55 +107,18 @@ $('document').ready(function (e) {
 
 
         let diff = rect.right - mouse_x;
-
-
         let track_duration = Math.round(track.mediaElement.duration);
         let current_time = Math.round(track.mediaElement.currentTime);
 
         let prz = current_time / track_duration * 100;
-        
-        
-        let cax = 100 - (diff/250) *100;
-        
-        let audio_prz = track_duration / 100 * cax;
-        
-        
 
-        
-        
-        
-        console.log("PROZENTUALER FORTSCHRITT VOM SONG "+cax);
-        
-        
+        let cax = 100 - (diff / 250) * 100;
+
+        let audio_prz = track_duration / 100 * cax;
+
         let player = document.getElementById("player");
 
-
-      player.currentTime = audio_prz;
-
-
-
-
-        console.log("DIFF" + diff);
-
-
-
-        /*  $('#player').bind('canplay', function () {
-         this.currentTime = 10;
-         });
-         */
-
-
-        // let player = document.getElementById("player");
-
-
-        //  player.currentTime = 5;
-
-
-
-        //  let prz = canvas_width /  rect.right-mouse_x *100;
-
-        //console.log("NEUER BUFFERWERT BEI" +prz+"%");
-        // console.log(e.clientX);
+        player.currentTime = audio_prz;
 
     });
 
@@ -219,6 +183,11 @@ $('document').ready(function (e) {
 
 
 
+    $(document).mousemove(function (event) {
+        console.log("evt");
+    });
+
+
 
     $('#init-btn').on('click', function (e) {
 
@@ -229,15 +198,19 @@ $('document').ready(function (e) {
 
     $('#volume_slider').on('input', function (e) {
 
-        analyseBytes();
+       
 
         var current_val = $('#volume_slider').val();
         var applied_gain = current_val / 100;
+        
+        $('#s0').html(Math.floor(applied_gain*100)+"%");
 
 
         gainNode.gain.value = applied_gain;
+        
+        
+    
 
-        //track.connect(gainNode).connect(audioCtx.destination);
 
 
     });
@@ -277,7 +250,7 @@ $('document').ready(function (e) {
 
     function addVolumeToAudioCtx() {
         gainNode = audioCtx.createGain();
-        gainNode.gain.value = 1;
+        gainNode.gain.value = 0.5;
     }
 
 
@@ -300,14 +273,18 @@ $('document').ready(function (e) {
     }
 
 
-
+    /**
+     * draws the ProgressBar of the currently playing Audio 
+     *
+     */
     function drawAudioProgressBar() {
 
 
-        let width = 250;
-        let height = 10;
+
 
         let canvasCtx = document.getElementById("audio-time-progress-bar").getContext('2d');
+        let width = 250;
+        let height = 10;
         canvasCtx.fillStyle = 'rgb(128, 128, 128)';
         canvasCtx.fillRect(0, height / 2, width, height);
 
@@ -367,6 +344,9 @@ $('document').ready(function (e) {
 
         // connect our graph
         track.connect(analyser).connect(gainNode).connect(panner).connect(biquadFilter).connect(audioCtx.destination);
+        
+        
+
 
 
 
@@ -391,6 +371,9 @@ $('document').ready(function (e) {
             drawAudioProgressBar();
 
         }, INTERVAL_REFRESH_MS_TIME);
+        
+        //Calling the AnalyseBytes Function to Show the Audio
+        analyseBytes();
 
 
     }
@@ -469,7 +452,7 @@ $('document').ready(function (e) {
 
         if (visEvent.target.value === "frequencybars")
         {
-            // clearInterval(frequenz_bar_interval_id);
+            //clearInterval(frequenz_bar_interval_id);
             clearInterval(sinuswave_interval_id);
             analyseBytes();
 
@@ -501,41 +484,17 @@ $('document').ready(function (e) {
 
 
 
-    function drawSound(dataArray) {
 
-        /*  var width = Math.floor(1 / this.freqs.length, 10);
-         
-         var canvas = document.getElementById("audio_visual_player").getContext('2d');
-         var drawContext = canvas.getContext('2d');
-         canvas.width = WIDTH;
-         canvas.height = HEIGHT;
-         // Draw the frequency domain chart.
-         for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
-         var value = this.freqs[i];
-         var percent = value / 256;
-         var height = HEIGHT * percent;
-         var offset = HEIGHT - height - 1;
-         var barWidth = WIDTH / this.analyser.frequencyBinCount;
-         var hue = i / this.analyser.frequencyBinCount * 360;
-         drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
-         drawContext.fillRect(i * barWidth, offset, barWidth, height);
-         }
-         
-         // Draw the time domain chart.
-         for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
-         var value = this.times[i];
-         var percent = value / 256;
-         var height = HEIGHT * percent;
-         var offset = HEIGHT - height - 1;
-         var barWidth = WIDTH / this.analyser.frequencyBinCount;
-         drawContext.fillStyle = 'white';
-         drawContext.fillRect(i * barWidth, offset, 1, 2);
-         }*/
+    /**
+     * draws the Audio on a Canvas
+     * @param bytes[] Array containg unsigned Bytes of the current Audiobuffer
+     */
+    function drawSound(dataArray) {
 
         let canvasCtx = document.getElementById("audio_visual_player").getContext('2d');
         canvasCtx.fillStyle = 'rgb(0, 0, 0)';
         canvasCtx.fillRect(0, 0, 300, 400);
-
+        analyser.fftSize = 256;
 
         let bufferLength = 128;
 
@@ -546,11 +505,11 @@ $('document').ready(function (e) {
         for (var i = 0; i < bufferLength; i++) {
             barHeight = dataArray[i];
 
-
             var hue = i / analyser.frequencyBinCount * 360;
+
+
             canvasCtx.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
 
-            //canvasCtx.fillStyle = 'rgb(' + 255 + ',' + 0 + ',' + 0 + ')';
 
 
             canvasCtx.fillRect(x, 400 - barHeight / 2, barWidth, barHeight / 2);

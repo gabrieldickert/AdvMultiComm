@@ -63,6 +63,7 @@ $project = 'AdvMultiComm';
                     src="-" 
                     crossorigin="anonymous"
                     type="audio/mp3" 
+                    hidden=""
                     >
                 Ihr Browser kann dieses Tondokument nicht wiedergeben.
             </audio>
@@ -74,7 +75,7 @@ $project = 'AdvMultiComm';
 
             </canvas>
 
-            <div class="container" style="background-color:red;">
+            <div class="container" style="background-color:#007bff;">
 
                 <div class="row">
                     <div class="col-md-2"><button id="audio-control-play-btn"><i class="fa fa-play"></i></button></div>
@@ -88,7 +89,7 @@ $project = 'AdvMultiComm';
             <hr>
             <button id="init-btn">Start WEB-Audio-API</button>
             <table class="music_control">
-                <tr><td><b>Volume:</b></td><td><input id="volume_slider"type="range" step="1"  min="1" max="100" value="50" class="slider"></td><td id="s0">50</td></tr>
+                <tr><td><b>Volume:</b></td><td><input id="volume_slider"type="range" step="1"  min="1" max="100" value="50" class="slider"></td><td id="s0">50%</td></tr>
                 <tr><td><b>Panning:</b></td><td><input id="panner_slider"type="range" step="0.01"  min="-1" max="1" value="0" class="slider"></td><td id="s1">0</td></tr>
 
                 <tr><td> <b>BiQuadFilter:</b>
