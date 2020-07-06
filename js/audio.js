@@ -8,6 +8,7 @@ $('document').ready(function (e) {
   var gainNode = null;
   var panner = null;
   var biquadFilter = null;
+  var convolver=null;
 
   var canvas_interval_id = null;
 
@@ -103,8 +104,7 @@ $('document').ready(function (e) {
 
     //creating a biQuadFiltermethod for the BiquadFilterNode
     biquadFilter = audioCtx.createBiquadFilter();
-
-    onOscillation();
+    convolver=audioCtx.createConvolver();
 
     analyser.fftSize = 256;
 
@@ -115,6 +115,7 @@ $('document').ready(function (e) {
     //Adding Nodes to the Audiocontext
     addVolumeToAudioCtx();
     addPanerToAudioCtx();
+    onOscillation();
 
 
 
@@ -160,7 +161,9 @@ oscstart.onclick = function(oscEvent)
 
 
 
-  //calling the function to create the Frequency Graph
+  
+//-----------------Visualize Frequency Bar Graph--------------
+
   function analyseBytes() {
 
     frequenz_bar_interval_id = setInterval(function () {
@@ -175,6 +178,8 @@ oscstart.onclick = function(oscEvent)
     }, 50);
 
   }
+
+//---------------Visualize Sinus Wave -----------------//
 
   function drawSinusWave() {
 
@@ -227,30 +232,15 @@ oscstart.onclick = function(oscEvent)
 
   }
 
-
-  function onBiquadFilter() {
+//-----------Creating Biquad Filter Actions------------//
+function onBiquadFilter() {
 
     biquadFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0)
 
     var voiceSetting = voiceSelect.value;
     console.log(voiceSetting);
 
-
-    //when convolver is selected it is connected back into the audio path
-      
-    if(voiceSetting == "convolver") 
-      {
-        biquadFilter.disconnect(0);
-        biquadFilter.connect(convolver);
-      } 
-      else 
-      {
-        biquadFilter.disconnect(0);
-        biquadFilter.connect(gainNode);
-      }
-
-
-    if (voiceSetting == "lowfrequency") {
+   if (voiceSetting == "lowfrequency") {
       biquadFilter.type = "lowshelf";
       biquadFilter.frequency.setTargetAtTime(500, audioCtx.currentTime, 0)
       biquadFilter.gain.setTargetAtTime(25, audioCtx.currentTime, 0)
@@ -264,12 +254,58 @@ oscstart.onclick = function(oscEvent)
   }
 
 
-  var voiceSelect = document.getElementById("BiQuadFilter");
+var voiceSelect = document.getElementById("BiQuadFilter");
 
-  voiceSelect.onchange = function (oEvent) {
+voiceSelect.onchange = function (oEvent) {
 
     onBiquadFilter();
   };
+
+
+//-------------Convolver Node---------------//
+
+var soundSource;
+
+ajaxRequest = new XMLHttpRequest();
+
+ajaxRequest.open('GET', 'http://localhost/AMC_new/AdvMultiComm/server/music/birds.mp3', true);
+
+ajaxRequest.responseType = 'arraybuffer';
+
+
+ajaxRequest.onload = function() {
+  var audioData = ajaxRequest.response;
+
+  audioCtx.decodeAudioData(audioData, function(buffer) {
+      soundSource = audioCtx.createBufferSource();
+      convolver.buffer = buffer;
+    }, function(e){ console.log("Error with decoding audio data" + e.err);});
+
+    soundSource.connect(audioCtx.destination);
+  //soundSource.loop = true;
+ 
+};
+
+ajaxRequest.send();
+
+var conv= document.getElementById("property");
+conv.onchange= function(ocChange){
+  if(ocChange.target.value==="reverb"){
+    biquadFilter.disconnect(0);
+    soundSource.start();
+    biquadFilter.connect(convolver);
+  }
+  else if (ocChange.target.value==="disablenormal"){
+   
+    biquadFilter.disconnect(0);
+    soundSource.start();
+    biquadFilter.connect(gainNode);
+  }
+  else{
+    console.log("No Property Selected");
+  }
+}
+
 
 
 
