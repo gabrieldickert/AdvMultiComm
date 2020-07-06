@@ -99,16 +99,16 @@ Ihr Browser kann dieses Tondokument nicht wiedergeben.
 
         </tr>
 
-<tr><td><b>Property</b>
+<tr><td><b>Convolver</b>
     </td>
     <td id="hf">
-      <select id="property" placeholder="property">
-                  <option value="property1">property1</option>
-                  <option value="property2" >property2 bars</option>
-                  <option value="property3" selected>Off</option>  
+      <select id="property">
+                  <option value="reverb">Reverb Effect</option>
+                  <option value="disablenormal" >Disable Normalization</option>
+                  <option value="off" selected>Off</option>  
       </select>
-            <td id ="filter">
-                <select id ="BiQuadFilter" placeholder="BiQuadFilter">
+            <td id ="convolver">
+                <select id ="convolverwave" placeholder="">
                       <option value="lowfrequency">Low Frequency</option>
                       <option value="highfrequency" >High Frequency</option>
                       <option value="off" selected>Off</option>  
