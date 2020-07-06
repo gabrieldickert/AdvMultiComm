@@ -348,10 +348,10 @@ oscstart.onclick = function(oscEvent)
 
 //---------------Visualize Sinus Wave -----------------//
 
-[13:17] Hitesh Shridhar
+
     
 
-functiondrawSinusWave() {
+function drawSinusWave() {
  
 sinuswave_interval_id = setInterval(function (e) {
  

@@ -1,3 +1,9 @@
+
+<?php
+	require_once('include/stuff.php');
+	
+	$project = 'AdvMultiComm';
+?>	
 <html>
     <head>
         <meta charset="utf-8">
