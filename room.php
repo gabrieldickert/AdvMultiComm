@@ -1,17 +1,4 @@
-<?php
-header('Access-Control-Allow-Origin: *');
-
-if (!isset($_GET["id"])) {
-    echo "<script>window.location.href='multi.php';</script>";
-    exit;
-}
-
-require_once('include/stuff.php');
-
-$project = 'AdvMultiComm';
-?>	
-<!DOCTYPE html>
-<html lang="de">
+<html>
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -112,26 +99,41 @@ $project = 'AdvMultiComm';
                     </td>-->
 
                 </tr>
+              
+              <tr><td><b>Convolver</b>
+    </td>
+    <td id="hf">
+      <select id="property">
+                  <option value="reverb">Reverb Effect</option>
+                  <option value="disablenormal" >Disable Normalization</option>
+                  <option value="off" selected>Off</option>  
+      </select>
+            <td id ="convolver">
+                <select id ="convolverwave" placeholder="">
+                      <option value="lowfrequency">Low Frequency</option>
+                      <option value="highfrequency" >High Frequency</option>
+                      <option value="off" selected>Off</option>  
+                </select>
+            </td>
+                <!--<td>
+                  -<input type="range" step="1" oninput="con_up(3,this.value);" onchange="con_up(3,this.value)
+                </td>-->
+    
+    </tr>
+    <tr>
+      <td>
+        <b>Oscillator_wave</b>
+      </td>
+      <td>
+        <input id="Oscillator_wave"type="range" step="0.1"  min="20" max="1000" value="440" class="slider">  
+      </td>
+      <td>
+        <input type="text" id="freq" value="440" disabled>     
+      </td>
+      <td><input type="button" value="start" id="start"></td>
+      <td></td>
+    </tr>
 
-                <tr><td><b>Property</b>
-                    </td><td id="hf">
-                        <select id="property" placeholder="property">
-                            <option value="property1">property1</option>
-                            <option value="property2" >property2 bars</option>
-                            <option value="property3" selected>Off</option>  
-                        </select>
-                    <td id ="filter">
-                        <select id ="BiQuadFilter" placeholder="BiQuadFilter">
-                            <option value="lowfrequency">Low Frequency</option>
-                            <option value="highfrequency" >High Frequency</option>
-                            <option value="off" selected>Off</option>  
-                        </select>
-                    </td>
-                    <td>
-                      <!---<input type="range" step="1" oninput="con_up(3,this.value);" onchange="con_up(3,this.value)> -->
-                    </td>
-
-                </tr>
             </table>
 
         </main>
@@ -167,4 +169,5 @@ $project = 'AdvMultiComm';
         <script src="js/playlist.js"></script>
         <script src="js/audio.js"></script>
     </body>
+
 </html>
