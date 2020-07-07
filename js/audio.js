@@ -525,6 +525,7 @@ conv.onchange= function(ocChange){
     biquadFilter.disconnect(0);
     //soundSource.start();
     biquadFilter.connect(convolver);
+    convolver.buffer= concertHallBuffer;
     convolver.connect(audioCtx.destination);
   }
   else if (ocChange.target.value==="disablenormal"){
@@ -532,7 +533,6 @@ conv.onchange= function(ocChange){
     biquadFilter.disconnect(0);
     soundSource.start();
     convolver.normalize= false;
-    convolver.buffer= concertHallBuffer;
     biquadFilter.connect(gainNode);
     convolver.connect(audioCtx.destination);
   }
