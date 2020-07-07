@@ -116,8 +116,8 @@
       </select>
             <td id ="convolver">
                 <select id ="convolverwave" placeholder="">
-                      <option value="lowfrequency">Low Frequency</option>
-                      <option value="highfrequency" >High Frequency</option>
+                      <option value="sinewave">Sinewave</option>
+                      <option value="frequencybars" >Frequency bars</option>
                       <option value="off" selected>Off</option>  
                 </select>
             </td>

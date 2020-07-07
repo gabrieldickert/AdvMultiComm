@@ -7,6 +7,7 @@ $('document').ready(function (e) {
   var panner = null;
   var biquadFilter = null;
   var convolver=null;
+  var concertHallBuffer=null;
   var canvas_interval_id = null;
   var frequenz_bar_interval_id = null;
   var sinuswave_interval_id = null;
@@ -244,36 +245,45 @@ $('document').ready(function (e) {
         
     $('#s1').html($('#panner_slider').val());
 
-    //  fetch("http://localhost:3000/stream/birds.mp3").then(function(data){
-    //     console.log(data);
-    //   } );
-    // function onFetch(){
-    //   debugger;
-    // }
-    // function onError(){
-    //   debugger;
-    // }
-    //  //fetch("http://localhost:3000/stream/birds.mp3").then(this.onFetch.bind(this)).catch(this.onError.bind(this));
-
-    //  //data.arrayBuffer())
-    // // .then(arrayBuffer=> audioCtx.decodeAudioData(arrayBuffer))
-    // // .then(decodedAudio =>{
-    // //   audio=decodedAudio;
-    // // });
-soundSource= audioCtx.createBufferSource();
-convolver.buffer=audio;
-
-
-    
+  
     //Adding Nodes to the Audiocontext
     addVolumeToAudioCtx();
     addPanerToAudioCtx();
     
+//-------------Convolver Node---------------//
+
+ajaxRequest = new XMLHttpRequest();
+
+ajaxRequest.open('GET', 'http://localhost:3000/stream/birds.mp3', true);
+
+ajaxRequest.responseType = 'arraybuffer';
+
+
+
+ajaxRequest.onload = function() {
+ // debugger;
+  var audioData = ajaxRequest.response;
+  audioCtx.decodeAudioData(audioData, function(buffer) {
+      concertHallBuffer = buffer;
+      soundSource = audioCtx.createBufferSource();
+      //convolver.buffer = concertHallBuffer;
+      //soundSource.buffer=concertHallBuffer;
+      
+    }, function(e){ 
+        console.log("Error with decoding audio data" + e.err);
+      });
+
+};
+
+ajaxRequest.send();
 
 
 
     // connect our graph
-    track.connect(analyser).connect(gainNode).connect(panner).connect(biquadFilter)/*.connect(oscillator)*/.connect(audioCtx.destination);
+    track.connect(analyser).connect(gainNode).connect(panner)/*.connect(biquadFilter).connect(convolver)/connect(oscillator).*/.connect(audioCtx.destination);
+      //track.disconnect(biquadFilter);
+      //track.disconnect(convolver);
+
 
   }
 
@@ -442,14 +452,21 @@ function onBiquadFilter() {
   var voiceSetting = voiceSelect.value;
   console.log(voiceSetting);             
    if (voiceSetting == "lowfrequency") {
+     convolver.disconnect(0);
     biquadFilter.type = "lowshelf";
     biquadFilter.frequency.setTargetAtTime(500, audioCtx.currentTime, 0)
     biquadFilter.gain.setTargetAtTime(25, audioCtx.currentTime, 0)
+    //biquadFilter.connect(audioCtx.destination);
+    track.connect(biquadFilter).connect(audioCtx.destination);
   } else if (voiceSetting == "highfrequency") {
+    convolver.disconnect(0);
     biquadFilter.type = "highshelf";
     biquadFilter.frequency.setTargetAtTime(1000, audioCtx.currentTime, 0)
     biquadFilter.gain.setTargetAtTime(25, audioCtx.currentTime, 0)
+    //biquadFilter.connect(audioCtx.destination);
+    track.connect(biquadFilter).connect(audioCtx.destination);
   } else {
+    biquadFilter.disconnect(0);
     console.log("Voice settings turned off");
 
   }
@@ -457,16 +474,7 @@ function onBiquadFilter() {
 
 }
 
-    function analyseBytes() {
 
-
-        frequenz_bar_interval_id = setInterval(function () {
-            var bufferLength = analyser.frequencyBinCount;
-            var dataArray = new Uint8Array(bufferLength);
-            analyser.getByteFrequencyData(dataArray);
-            drawSound(dataArray);
-        }, INTERVAL_REFRESH_MS_TIME);
-    };
   
 
 
@@ -478,74 +486,50 @@ voiceSelect.onchange = function (oEvent) {
   };
 
 
-//-------------Convolver Node---------------//
 
-
-
-ajaxRequest = new XMLHttpRequest();
-
-ajaxRequest.open('GET', 'http://localhost:3000/stream/birds.mp3', true);
-
-ajaxRequest.responseType = 'arraybuffer';
-
-
-ajaxRequest.onload = function() {
-  debugger;
-  var audioData = ajaxRequest.response;
-
-  audioCtx.decodeAudioData(audioData, function(buffer) {
-      soundSource = audioCtx.createBufferSource();
-      
-      convolver.buffer = buffer;
-    }, function(e){ 
-        console.log("Error with decoding audio data" + e.err);
-      });
-
-    //soundSource.connect(audioCtx.destination);
-  //soundSource.loop = true;
- 
-};
-
-ajaxRequest.send();
-
-//async function createReverb(){
-
-
-
-//var reverb = createReverb();
 var conv= document.getElementById("property");
 conv.onchange= function(ocChange){
 
   
-  biquadFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0)
-  gainNode = audioCtx.createGain();
-  gainNode.gain.value = 1;
-  
   if(ocChange.target.value==="reverb"){
     biquadFilter.disconnect(0);
-    //soundSource.start();
-    biquadFilter.connect(convolver);
-    convolver.buffer= concertHallBuffer;
-    convolver.connect(audioCtx.destination);
+
+    convolver.buffer = concertHallBuffer;
+    track.connect(convolver).connect(audioCtx.destination);  
   }
+
   else if (ocChange.target.value==="disablenormal"){
    
     biquadFilter.disconnect(0);
-    soundSource.start();
+    
     convolver.normalize= false;
-    biquadFilter.connect(gainNode);
+    
     convolver.connect(audioCtx.destination);
   }
+
   else{
     console.log("No Property Selected");
+    convolver.disconnect(0);
   }
 }
 
+//*************** call for the Frequency Bar Graph ***********//
+
+function analyseBytes() {
 
 
+  frequenz_bar_interval_id = setInterval(function () {
+      var bufferLength = analyser.frequencyBinCount;
+      var dataArray = new Uint8Array(bufferLength);
+      analyser.getByteFrequencyData(dataArray);
+      drawSound(dataArray);
+  }, INTERVAL_REFRESH_MS_TIME);
+};
+clearRectangle();
 
   //selecting the waves function: Frequecy wave or sinuswave
   var visualSelect = document.getElementById("waves");
+  var visualConv = document.getElementById("convolverwave");
 
   visualSelect.onchange = function (visEvent) {
   
@@ -572,6 +556,7 @@ conv.onchange= function(ocChange){
 
       clearInterval(frequenz_bar_interval_id);
       clearInterval(sinuswave_interval_id);
+      clearRectangle();
       console.log("No graph selected");
     }
 
@@ -579,10 +564,47 @@ conv.onchange= function(ocChange){
 
 
 
+  visualConv.onchange = function (visconvEvent) {
+  
+    var WIDTH = 300;
+    var HEIGHT = 400;
+    if (visconvEvent.target.value === "frequencybars")
+        {
+            //clearInterval(frequenz_bar_interval_id);
+            clearInterval(sinuswave_interval_id);
+            analyseBytes();
+        }
 
+    else if (visconvEvent.target.value === "sinewave") {
+
+      clearInterval(frequenz_bar_interval_id);
+      //clearInterval(sinuswave_interval_id);
+
+      drawSinusWave();
+
+
+    }
+    else {
+
+      //TODO RESET CANVAS
+
+      clearInterval(frequenz_bar_interval_id);
+      clearInterval(sinuswave_interval_id);
+      console.log("No graph selected");
+      clearRectangle();
+    }
+
+  }
+
+
+
+function clearRectangle(){
+  let canvasCtx = document.getElementById("audio_visual_player").getContext('2d');
+        canvasCtx.clearRect(0, 0, 300, 400);
+}
 
     /**
-     * draws the Audio on a Canvas
+     * draws the Audio Frequency Graph on a Canvas
      * @param bytes[] Array containg unsigned Bytes of the current Audiobuffer
      */
     function drawSound(dataArray) {
