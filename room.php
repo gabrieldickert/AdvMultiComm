@@ -1,8 +1,8 @@
 
 <?php
-	require_once('include/stuff.php');
-	
-	$project = 'AdvMultiComm';
+require_once('include/stuff.php');
+
+$project = 'AdvMultiComm';
 ?>	
 <html>
     <head>
@@ -72,10 +72,15 @@
 
                 <div class="row">
                     <div class="col-md-2"><button id="audio-control-play-btn"><i class="fa fa-play"></i></button></div>
-                    <div class="col-md-2" id="audio-time-informs">60/1:20</div>
+                    <div class="col-md-2" id="audio-time-informs">--:--</div>
                     <div class="col-md-4"><canvas id="audio-time-progress-bar" width="250px" height="10px"></canvas></div>
                     <div class="col-md-1"><button id="audio-control-mute-btn"><i class="fa fa-volume-up"></i></button></div>
                 </div>
+
+                <audio id="mic-player" controls></audio>
+
+
+                <button id='mic-btn'>Init Mic</button>
 
             </div>
             <p class="text-center" id="song_info" style="margin-top:30px;margin-bottom:-10px;font-weight:bold;display:none;">Playlist: abc - bird3.mp3</p>
@@ -105,40 +110,40 @@
                     </td>-->
 
                 </tr>
-              
-              <tr><td><b>Convolver</b>
-    </td>
-    <td id="hf">
-      <select id="property">
-                  <option value="reverb">Reverb Effect</option>
-                  <option value="disablenormal" >Disable Normalization</option>
-                  <option value="off" selected>Off</option>  
-      </select>
-            <td id ="convolver">
-                <select id ="convolverwave" placeholder="">
-                      <option value="lowfrequency">Low Frequency</option>
-                      <option value="highfrequency" >High Frequency</option>
-                      <option value="off" selected>Off</option>  
-                </select>
-            </td>
-                <!--<td>
-                  -<input type="range" step="1" oninput="con_up(3,this.value);" onchange="con_up(3,this.value)
-                </td>-->
-    
-    </tr>
-    <tr>
-      <td>
-        <b>Oscillator_wave</b>
-      </td>
-      <td>
-        <input id="Oscillator_wave"type="range" step="0.1"  min="20" max="1000" value="440" class="slider">  
-      </td>
-      <td>
-        <input type="text" id="freq" value="440" disabled>     
-      </td>
-      <td><input type="button" value="start" id="start"></td>
-      <td></td>
-    </tr>
+
+                <tr><td><b>Convolver</b>
+                    </td>
+                    <td id="hf">
+                        <select id="property">
+                            <option value="reverb">Reverb Effect</option>
+                            <option value="disablenormal" >Disable Normalization</option>
+                            <option value="off" selected>Off</option>  
+                        </select>
+                    <td id ="convolver">
+                        <select id ="convolverwave" placeholder="">
+                            <option value="lowfrequency">Low Frequency</option>
+                            <option value="highfrequency" >High Frequency</option>
+                            <option value="off" selected>Off</option>  
+                        </select>
+                    </td>
+                        <!--<td>
+                          -<input type="range" step="1" oninput="con_up(3,this.value);" onchange="con_up(3,this.value)
+                        </td>-->
+
+                </tr>
+                <tr>
+                    <td>
+                        <b>Oscillator_wave</b>
+                    </td>
+                    <td>
+                        <input id="Oscillator_wave"type="range" step="0.1"  min="20" max="1000" value="440" class="slider">  
+                    </td>
+                    <td>
+                        <input type="text" id="freq" value="440" disabled>     
+                    </td>
+                    <td><input type="button" value="start" id="start"></td>
+                    <td></td>
+                </tr>
 
             </table>
 
