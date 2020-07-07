@@ -36,7 +36,7 @@ function playNextSong(old,p) {
 
 function playSong(name,p=-1,sync=true,seek=0) {
 	player.src = "http://"+window.location.hostname+":3000/stream/"+name;
-	if(seek != 0)
+		if(seek != 0)
 	{
 		player.currentTime = seek;
 	}
