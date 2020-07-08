@@ -20,6 +20,8 @@ $('document').ready(function (e) {
     var audio = null;
     var soundSource = null;
 
+    var temp_arr = null;
+
 
 
 
@@ -93,6 +95,7 @@ $('document').ready(function (e) {
 
 
 
+
     /**
      * Draws the Progress of the Audio-Bar
      */
@@ -152,6 +155,8 @@ $('document').ready(function (e) {
     $('#panner_slider').on('input', function (e) {
 
         onPanningChanged($('#panner_slider').val());
+
+
 
 
     });
@@ -219,6 +224,10 @@ $('document').ready(function (e) {
     function onPanningChanged(value) {
 
         panner.pan.value = value;
+
+        $('#s1').html("" + value);
+
+        console.log(audioCtx);
     }
 
 
@@ -360,6 +369,11 @@ $('document').ready(function (e) {
         canvasCtx.fillStyle = 'rgb(0, 0, 0)';
 
         canvasCtx.fillRect(0, height / 2, width / 100 * prz, height);
+
+        canvasCtx.fillStyle = 'rgb(255,255,255)';
+
+        //Draws white dot for Rewind / Forward
+        canvasCtx.fillRect(width / 100 * prz, height / 2, 5, height / 2);
 
         $('#audio-time-informs').html(Math.floor(current_time / 60) + ":" + current_time % 60 + "/" + Math.round(track_duration / 60) + ":" + (track_duration % 60));
 
@@ -668,7 +682,7 @@ $('document').ready(function (e) {
 
 
     const player = document.getElementById('mic-player');
-    
+
     var mic_analyser = null;
     $('#mic-btn').on('click', function (e) {
 
@@ -716,6 +730,62 @@ $('document').ready(function (e) {
     navigator.mediaDevices.getUserMedia({audio: true, video: false})
             .then(handleSuccess);
 
+
+
+
+    /*Stats for Nerds*/
+
+
+    $('#nerd-stats-btn').on('click', function (e) {
+
+
+
+
+        $('#detailaudio-tbl > tbody').html("");
+        $('#byte-tbl > tbody').html("");
+
+        //Output for Statistic
+        $('#detailaudio-tbl > tbody').append("<tr><th>Sampling-Rate:</th><td>" + audioCtx.sampleRate + " Hz</td></tr>");
+        $('#detailaudio-tbl > tbody').append("<tr><th>Base-Latency:</th><td>" + audioCtx.baseLatency + " </td></tr>");
+        $('#detailaudio-tbl > tbody').append("<tr><th>Channel-Count:</th><td>" + audioCtx.destination.channelCount + " </td></tr>");
+        $('#detailaudio-tbl > tbody').append("<tr><th>Max Channel-Count:</th><td>" + audioCtx.destination.maxChannelCount + " </td></tr>");
+        $('#detailaudio-tbl > tbody').append("<tr><th>Channel Count Mode:</th><td>" + audioCtx.destination.channelCountMode + " </td></tr>");
+        $('#detailaudio-tbl > tbody').append("<tr><th>Channel Interpretation:</th><td>" + audioCtx.destination.channelInterpretation + " </td></tr>");
+        $('#detailaudio-tbl > tbody').append("<tr><th>Inputnumber:</th><td>" + audioCtx.destination.numberOfInputs + " </td></tr>");
+        $('#detailaudio-tbl > tbody').append("<tr><th>Outputnumber:</th><td>" + audioCtx.destination.numberOfOutputs + " </td></tr>");
+        $('#detailaudio-tbl > tbody').append("<tr><th>Fast Fourier Transform Size:</th><td>" + analyser.fftSize + " </td></tr>");
+        $('#detailaudio-tbl > tbody').append("<tr><th>Bufferlength:</th><td>" + analyser.frequencyBinCount + " </td></tr>");
+
+
+
+
+
+
+        setInterval(function (e) {
+
+            $('#byte-tbl > tbody').html("");
+            let bytearr = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(bytearr);
+
+
+            for (let i = 0; i < bytearr.length - 8; i++) {
+
+
+
+                $('#byte-tbl > tbody').append("<tr><td>" + bytearr[i] + "</td>" + "<td>" + bytearr[i + 1] + "</td>" + "<td>" + bytearr[i + 2] + "</td><td>" + bytearr[i + 3] + "</td><td>" + bytearr[i + 4] + "</td><td>" + bytearr[i + 5] + "</td><td>" + bytearr[i + 6] + "</td><td>" + bytearr[i + 7] + "</td></tr>");
+
+
+            }
+
+
+        }, 1000);
+
+
+
+
+
+
+    });
 
 
 });

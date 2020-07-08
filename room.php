@@ -84,6 +84,7 @@ $project = 'AdvMultiComm';
 
             </div>
             <p class="text-center" id="song_info" style="margin-top:30px;margin-bottom:-10px;font-weight:bold;display:none;">Playlist: abc - bird3.mp3</p>
+            <button id="nerd-stats-btn" data-toggle="modal" data-target="#nerdstatsmodal" class="btn btn-info">Statistics for Nerds</button>
             <hr>
             <button id="init-btn">Start WEB-Audio-API</button>
             <table class="music_control">
@@ -174,6 +175,38 @@ $project = 'AdvMultiComm';
                 </div>
             </div>
         </div>
+
+
+
+        <!-- Stats for Nerds !-->
+        <div class="modal fade" id="nerdstatsmodal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="detailModalLabel">Statistics</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="">
+                        <table id="detailaudio-tbl">
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                        <table id="byte-tbl">
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
 
         <?php echo getFooter($project); ?>
         <script src="js/room.js"></script>
