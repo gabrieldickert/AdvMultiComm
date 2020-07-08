@@ -35,6 +35,10 @@ app.use(express.urlencoded());
 // Parse JSON bodies (as sent by API clients)
 app.use(express.json());
 
+
+
+
+
 app.get("/files", function(req,res) {
 	fs.readdir('music/', function (err, files) {
 		if (err) {
@@ -47,6 +51,14 @@ app.get("/files", function(req,res) {
 		});
 		res.send(string.slice(0, -1));
 	});
+});
+
+
+
+app.get("/room/:id/voice",function() {
+    
+    
+console.log("ha");
 });
 
 app.get("/stream/:song", function(req, res) {
