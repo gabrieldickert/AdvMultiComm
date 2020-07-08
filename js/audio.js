@@ -1,32 +1,34 @@
 $('document').ready(function (e) {
 
-  var audioCtx = null;
-  var analyser = null;
-  var track = null;
-  var gainNode = null;
-  var panner = null;
-  var biquadFilter = null;
-  var convolver=null;
-  var concertHallBuffer=null;
-  var canvas_interval_id = null;
-  var frequenz_bar_interval_id = null;
-  var sinuswave_interval_id = null;
-  var oscillator=null;
-  var audio_times_interval_id = null;
-  const INTERVAL_REFRESH_MS_TIME = 50;
-  var isPaused = false;
-  var isPlaying = false;
-  var isMuted = false;
-  var audio=null;
-  var soundSource=null;
 
+    var audioCtx = null;
+    var MicAudioCtx = null;
+    var analyser = null;
+    var track = null;
+    var gainNode = null;
+    var panner = null;
+    var biquadFilter = null;
+    var convolver = null;
+    var canvas_interval_id = null;
+    var frequenz_bar_interval_id = null;
+    var sinuswave_interval_id = null;
+    var oscillator = null;
+    var audio_times_interval_id = null;
+    const INTERVAL_REFRESH_MS_TIME = 50;
+    var isPaused = false;
+    var isPlaying = false;
+    var isMuted = false;
+    var audio = null;
+    var soundSource = null;
 
-
+    var temp_arr = null;
 
 
     //Addding Eventlistener on the Controlbutton
     $('#audio-control-play-btn').on('click', function (e) {
 
+
+        console.log("click");
 
 
         if (isPlaying) {
@@ -50,6 +52,9 @@ $('document').ready(function (e) {
     });
 
 
+    /**
+     * Control for the Mute Function
+     */
     $('#audio-control-mute-btn').on('click', function (e) {
 
 
@@ -85,6 +90,13 @@ $('document').ready(function (e) {
 
 
 
+
+
+
+
+    /**
+     * Draws the Progress of the Audio-Bar
+     */
     $('#audio-time-progress-bar').on('click', function (e) {
 
 
@@ -126,53 +138,44 @@ $('document').ready(function (e) {
 
 
 
-  //calling the graph on the volume and changing the volume
-  $('#volume_slider').on('input', function (e) {
+    //calling the graph on the volume and changing the volume
+    $('#volume_slider').on('input', function (e) {
 
-    var current_val = $('#volume_slider').val();
-    var applied_gain = current_val / 100;
+        var current_val = $('#volume_slider').val();
+        var applied_gain = current_val / 100;
 
-
-    gainNode.gain.value = applied_gain;
-
-            /*
-            var WIDTH = 300;
-            var HEIGHT = 400;
-            let canvasCtx = document.getElementById("audio_visual_player").getContext('2d');
-            analyser.fftSize = 2048;
-            var bufferLength = analyser.fftSize;
-
-            var dataArray = new Uint8Array(bufferLength);*/
+        gainNode.gain.value = applied_gain;
 
 
-
-  });
-
-
-  $('#panner_slider').on('input', function (e) {
-
-    onPanningChanged($('#panner_slider').val());
+    });
 
 
-  });
+    $('#panner_slider').on('input', function (e) {
+
+        onPanningChanged($('#panner_slider').val());
 
 
 
 
-  /**
-   *  vads a Paner to the AudioContext
-   */
+    });
 
-  function addPanerToAudioCtx() {
 
-    
-       let pannerOption = {pan: 0};
+
+
+    /**
+     *  vads a Paner to the AudioContext
+     */
+
+    function addPanerToAudioCtx() {
+
+
+        let pannerOption = {pan: 0};
 
         panner = new StereoPannerNode(audioCtx, pannerOption);
 
         panner.pan.Value = 0;
 
-  }
+    }
 
 
 
@@ -194,61 +197,71 @@ $('document').ready(function (e) {
     });
 
 
-  /**
-   * adds a Volumehanlder(Gain) to the AudioContext
-   * @returns {undefined}
-   */
+    /**
+     * adds a Volumehanlder(Gain) to the AudioContext
+     * @returns {undefined}
+     */
 
-  function addVolumeToAudioCtx() {
-    gainNode = audioCtx.createGain();
-    gainNode.gain.value = 1;
-  }
-
-
-
-  /**
-   * 
-   * @param int Value of the Volume/Gain
-   */
-  function onVolumeChanged(value) {
-
-    gainNode.gain.value = 0.1;
-
-  }
-
-  function onPanningChanged(value) {
-
-    panner.pan.value = value;
-  }
+    function addVolumeToAudioCtx() {
+        gainNode = audioCtx.createGain();
+        gainNode.gain.value = 1;
+    }
 
 
-  /**
-   * Inits a new Audio Context
-   */
-  function initAudioCtx() {
 
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    /**
+     * 
+     * @param int Value of the Volume/Gain
+     */
+    function onVolumeChanged(value) {
 
-    analyser = audioCtx.createAnalyser();
+        gainNode.gain.value = 0.1;
 
-    //creating a biQuadFiltermethod for the BiquadFilterNode
-    biquadFilter = audioCtx.createBiquadFilter();
-    convolver=audioCtx.createConvolver();
+    }
 
-    analyser.fftSize = 256;
+    function onPanningChanged(value) {
 
-    let audioElement = document.querySelector('audio');
+        panner.pan.value = value;
 
-    track = audioCtx.createMediaElementSource(audioElement);
-    //panner.pan.value = $('#panner_slider').val();
-    //onPanningChanged($('#panner_slider').val());   
+        $('#s1').html("" + value);
+
+        console.log(audioCtx);
+    }
+
+
+    /**
+     * Inits a new Audio Context
+     */
+    function initAudioCtx() {
+
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        analyser = audioCtx.createAnalyser();
+
+        //creating a biQuadFiltermethod for the BiquadFilterNode
+        biquadFilter = audioCtx.createBiquadFilter();
+        convolver = audioCtx.createConvolver();
+
+
+        isMuted = false;
+        isPlaying = true;
+
+        analyser.fftSize = 256;
+
+        let audioElement = document.querySelector('audio');
+
+        track = audioCtx.createMediaElementSource(audioElement);
+        //panner.pan.value = $('#panner_slider').val();
+        //onPanningChanged($('#panner_slider').val());   
+
+        $('#s1').html($('#panner_slider').val());
+
         
-    $('#s1').html($('#panner_slider').val());
+        soundSource = audioCtx.createBufferSource();
+        convolver.buffer = audio;
 
-  
-    //Adding Nodes to the Audiocontext
-    addVolumeToAudioCtx();
-    addPanerToAudioCtx();
+
+
     
 //-------------Convolver Node---------------//
 
@@ -278,28 +291,38 @@ ajaxRequest.onload = function() {
 ajaxRequest.send();
 
 
-
-    // connect our graph
-    track.connect(analyser).connect(gainNode).connect(panner)/*.connect(biquadFilter).connect(convolver)/connect(oscillator).*/.connect(audioCtx.destination);
-      //track.disconnect(biquadFilter);
-      //track.disconnect(convolver);
+        //Adding Nodes to the Audiocontext
+        addVolumeToAudioCtx();
+        addPanerToAudioCtx();
 
 
-  }
 
-  function onOscillation(){
 
-    oscillator=audioCtx.createOscillator();
-    oscillator.connect(audioCtx.destination);
-    //oscillator.start(0);
-  }
+        // connect our graph
+        track.connect(analyser).connect(gainNode).connect(panner)/*.connect(biquadFilter).connect(oscillator)*/.connect(audioCtx.destination);
 
-  var oscw = document.getElementById("Oscillator_wave");
-  oscw.onchange = function(oscwEvent){
-  var val= oscwEvent.target.value;
-  var freq= document.getElementById("freq");
-  freq.value=val;
-  oscillator.frequency.value=val;
+
+        var test = setInterval(function (e) {
+
+
+            drawAudioProgressBar();
+        }, INTERVAL_REFRESH_MS_TIME);
+
+    }
+
+    function onOscillation() {
+
+        oscillator = audioCtx.createOscillator();
+        oscillator.connect(audioCtx.destination);
+        //oscillator.start(0);
+    }
+
+    var oscw = document.getElementById("Oscillator_wave");
+    oscw.onchange = function (oscwEvent) {
+        var val = oscwEvent.target.value;
+        var freq = document.getElementById("freq");
+        freq.value = val;
+        oscillator.frequency.value = val;
     }
 
     /**
@@ -312,41 +335,26 @@ ajaxRequest.send();
         gainNode.gain.value = 0.5;
     }
 
-var oscstart= document.getElementById("start");
-oscstart.onclick = function(oscEvent)
-{
-  if (oscEvent.target.value==="start"){
-    onOscillation();
-    oscillator.start(0);
-    oscEvent.target.value="stop"; 
+    var oscstart = document.getElementById("start");
+    oscstart.onclick = function (oscEvent)
+    {
+        if (oscEvent.target.value === "start") {
+            onOscillation();
+            oscillator.start(0);
+            oscEvent.target.value = "stop";
 
-  }
-  else
-  {
-  oscillator.stop(0);
-  oscEvent.target.value="start";
-  }
-}
-  
+        } else
+        {
+            oscillator.stop(0);
+            oscEvent.target.value = "start";
+        }
+    }
 
 
 
-  
+
+
 //-----------------Visualize Frequency Bar Graph--------------
-
-  /*function analyseBytes() {
-
-    frequenz_bar_interval_id = setInterval(function () {
-
-      //analyser = audioCtx.createAnalyser();
-      var bufferLength = analyser.frequencyBinCount;
-      // console.log(bufferLength);
-      var dataArray = new Uint8Array(bufferLength);
-      analyser.getByteFrequencyData(dataArray);
-      //console.log(dataArray);
-      drawSound(dataArray);
-    }, 50);
-  }*/
     /**
      * draws the ProgressBar of the currently playing Audio 
      *
@@ -373,9 +381,12 @@ oscstart.onclick = function(oscEvent)
 
         canvasCtx.fillRect(0, height / 2, width / 100 * prz, height);
 
+        canvasCtx.fillStyle = 'rgb(255,255,255)';
 
+        //Draws white dot for Rewind / Forward
+        canvasCtx.fillRect(width / 100 * prz, height / 2, 5, height / 2);
 
-
+        $('#audio-time-informs').html(Math.floor(current_time / 60) + ":" + current_time % 60 + "/" + Math.round(track_duration / 60) + ":" + (track_duration % 60));
 
     }
 
@@ -383,74 +394,65 @@ oscstart.onclick = function(oscEvent)
 //---------------Visualize Sinus Wave -----------------//
 
 
-    
 
-function drawSinusWave() {
- 
-sinuswave_interval_id = setInterval(function () {
- 
-console.log("SINUS");
- 
-      var WIDTH = 300;
-      var HEIGHT = 400;
-      let canvasCtx =document.getElementById("audio_visual_player").getContext('2d');
-      analyser.fftSize = 2048;
-      var bufferLength =analyser.fftSize;
-      console.log(bufferLength);
-      var dataArray = new Uint8Array(bufferLength);
- 
-canvasCtx.clearRect(0, 0,WIDTH,HEIGHT);
-      //drawVisual = requestAnimationFrame(draw);
- 
-analyser.getByteTimeDomainData(dataArray);
- 
-canvasCtx.fillStyle = 'rgb(200, 200, 200)';
-canvasCtx.fillRect(0, 0,WIDTH,HEIGHT);
- 
-canvasCtx.lineWidth = 2;
-canvasCtx.strokeStyle = 'rgb(255, 0, 0)';
- 
-canvasCtx.beginPath();
- 
-      var sliceWidth =WIDTH * 1.0 / bufferLength;
-      var x = 0;
- 
-for (var i = 0;i <bufferLength;i++) {
- 
-        var v =dataArray[i] / 128.0;
-        var y =v *HEIGHT / 2;
- 
-        if (i === 0) {
-canvasCtx.moveTo(x,y);
-        } else {
-canvasCtx.lineTo(x,y);
-        }
- 
-x +=sliceWidth;
-      }
- 
-canvasCtx.lineTo(canvasCtx.Width, canvasCtx.Height / 2);
-canvasCtx.stroke();
- 
-    }, INTERVAL_REFRESH_MS_TIME);
- 
-  }
+
+    function drawSinusWave() {
+
+        sinuswave_interval_id = setInterval(function () {
+
+            console.log("SINUS");
+
+            var WIDTH = 300;
+            var HEIGHT = 400;
+            let canvasCtx = document.getElementById("audio_visual_player").getContext('2d');
+            analyser.fftSize = 2048;
+            var bufferLength = analyser.fftSize;
+            console.log(bufferLength);
+            var dataArray = new Uint8Array(bufferLength);
+
+            canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
+            //drawVisual = requestAnimationFrame(draw);
+
+            analyser.getByteTimeDomainData(dataArray);
+
+            canvasCtx.fillStyle = 'rgb(200, 200, 200)';
+            canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+
+            canvasCtx.lineWidth = 2;
+            canvasCtx.strokeStyle = 'rgb(255, 0, 0)';
+
+            canvasCtx.beginPath();
+
+            var sliceWidth = WIDTH * 1.0 / bufferLength;
+            var x = 0;
+
+            for (var i = 0; i < bufferLength; i++) {
+
+                var v = dataArray[i] / 128.0;
+                var y = v * HEIGHT / 2;
+
+                if (i === 0) {
+                    canvasCtx.moveTo(x, y);
+                } else {
+                    canvasCtx.lineTo(x, y);
+                }
+
+                x += sliceWidth;
+            }
+
+            canvasCtx.lineTo(canvasCtx.Width, canvasCtx.Height / 2);
+            canvasCtx.stroke();
 
 
 
-                                        
-                                        
-                                        
-                                        
+
+
 //-----------Creating Biquad Filter Actions------------//
-function onBiquadFilter() {
-
+    function onBiquadFilter() {
 
     biquadFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0)
-
-                //Calling the AnalyseBytes Function to Show the Audio
-  var voiceSetting = voiceSelect.value;
-  console.log(voiceSetting);             
+    var voiceSetting = voiceSelect.value;
+    console.log(voiceSetting);             
    if (voiceSetting == "lowfrequency") {
      convolver.disconnect(0);
     biquadFilter.type = "lowshelf";
@@ -469,21 +471,30 @@ function onBiquadFilter() {
     biquadFilter.disconnect(0);
     console.log("Voice settings turned off");
 
-  }
+        }, INTERVAL_REFRESH_MS_TIME);
+
+    }
 
 
-}
+ //********** commentieren wegen analyseBytes() function************//
+          
+          
+     //     frequenz_bar_interval_id = setInterval(function () {
+       //     var bufferLength = analyser.frequencyBinCount;
+        //    var dataArray = new Uint8Array(bufferLength);
+         //   analyser.getByteFrequencyData(dataArray);
+          //  drawSound(dataArray);
+       // }, INTERVAL_REFRESH_MS_TIME);
+    //}
+    //;
 
+   var voiceSelect = document.getElementById("BiQuadFilter");
 
-  
+    voiceSelect.onchange = function (oEvent) {
 
+        onBiquadFilter();
+    };
 
-var voiceSelect = document.getElementById("BiQuadFilter");
-
-voiceSelect.onchange = function (oEvent) {
-
-    onBiquadFilter();
-  };
 
 
 
@@ -503,8 +514,8 @@ conv.onchange= function(ocChange){
     biquadFilter.disconnect(0);
     
     convolver.normalize= false;
-    
-    convolver.connect(audioCtx.destination);
+    track.connect(convolver).connect(audioCtx.destination);
+    //convolver.connect(audioCtx.destination);
   }
 
   else{
@@ -536,33 +547,35 @@ clearRectangle();
     var WIDTH = 300;
     var HEIGHT = 400;
     if (visEvent.target.value === "frequencybars")
+
+
+
+    //selecting the waves function: Frequecy wave or sinuswave
+  
         {
             //clearInterval(frequenz_bar_interval_id);
             clearInterval(sinuswave_interval_id);
             analyseBytes();
-        }
+        } else if (visEvent.target.value === "sinewave") {
 
-    else if (visEvent.target.value === "sinewave") {
+            clearInterval(frequenz_bar_interval_id);
+            //clearInterval(sinuswave_interval_id);
 
-      clearInterval(frequenz_bar_interval_id);
-      //clearInterval(sinuswave_interval_id);
+            drawSinusWave();
 
-      drawSinusWave();
+        } else {
 
-    }
-    else {
+          
 
-      //TODO RESET CANVAS
 
-      clearInterval(frequenz_bar_interval_id);
+       clearInterval(frequenz_bar_interval_id);
       clearInterval(sinuswave_interval_id);
       clearRectangle();
       console.log("No graph selected");
+
     }
 
-  }
-
-
+  };
 
   visualConv.onchange = function (visconvEvent) {
   
@@ -689,6 +702,119 @@ function clearRectangle(){
 
         isMuted = false;
     }
+
+
+
+    /**
+     * Microphone Input
+     */
+
+
+    const player = document.getElementById('mic-player');
+
+    var mic_analyser = null;
+    $('#mic-btn').on('click', function (e) {
+
+
+        MicAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        const source = MicAudioCtx.createMediaStreamSource(player.srcObject);
+        const processor = MicAudioCtx.createScriptProcessor(512, 1, 1);
+
+
+        mic_analyser = MicAudioCtx.createAnalyser();
+
+        source.connect(processor).connect(mic_analyser);
+        processor.connect(MicAudioCtx.destination);
+
+        processor.onaudioprocess = function (e) {
+            // Do something with the data, e.g. convert it to WAV
+
+
+            let float_arr = e.inputBuffer.getChannelData(0);
+
+            //Converting float Array to Unsigned Byte Array in Order to send the Chunks to channel
+            let byte_arr = new Uint8Array(float_arr.buffer);
+
+
+            console.log(byte_arr);
+
+        };
+
+
+
+
+    });
+
+
+
+    const handleSuccess = function (stream) {
+        if (window.URL) {
+            player.srcObject = stream;
+        } else {
+            player.src = stream;
+        }
+    };
+
+    navigator.mediaDevices.getUserMedia({audio: true, video: false})
+            .then(handleSuccess);
+
+
+
+
+    /*Stats for Nerds*/
+
+
+    $('#nerd-stats-btn').on('click', function (e) {
+
+
+
+
+        $('#detailaudio-tbl > tbody').html("");
+        $('#byte-tbl > tbody').html("");
+
+        //Output for Statistic
+        $('#detailaudio-tbl > tbody').append("<tr><th>Sampling-Rate:</th><td>" + audioCtx.sampleRate + " Hz</td></tr>");
+        $('#detailaudio-tbl > tbody').append("<tr><th>Base-Latency:</th><td>" + audioCtx.baseLatency + " </td></tr>");
+        $('#detailaudio-tbl > tbody').append("<tr><th>Channel-Count:</th><td>" + audioCtx.destination.channelCount + " </td></tr>");
+        $('#detailaudio-tbl > tbody').append("<tr><th>Max Channel-Count:</th><td>" + audioCtx.destination.maxChannelCount + " </td></tr>");
+        $('#detailaudio-tbl > tbody').append("<tr><th>Channel Count Mode:</th><td>" + audioCtx.destination.channelCountMode + " </td></tr>");
+        $('#detailaudio-tbl > tbody').append("<tr><th>Channel Interpretation:</th><td>" + audioCtx.destination.channelInterpretation + " </td></tr>");
+        $('#detailaudio-tbl > tbody').append("<tr><th>Inputnumber:</th><td>" + audioCtx.destination.numberOfInputs + " </td></tr>");
+        $('#detailaudio-tbl > tbody').append("<tr><th>Outputnumber:</th><td>" + audioCtx.destination.numberOfOutputs + " </td></tr>");
+        $('#detailaudio-tbl > tbody').append("<tr><th>Fast Fourier Transform Size:</th><td>" + analyser.fftSize + " </td></tr>");
+        $('#detailaudio-tbl > tbody').append("<tr><th>Bufferlength:</th><td>" + analyser.frequencyBinCount + " </td></tr>");
+
+
+
+
+
+
+        setInterval(function (e) {
+
+            $('#byte-tbl > tbody').html("");
+            let bytearr = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(bytearr);
+
+
+            for (let i = 0; i < bytearr.length - 8; i++) {
+
+
+
+                $('#byte-tbl > tbody').append("<tr><td>" + bytearr[i] + "</td>" + "<td>" + bytearr[i + 1] + "</td>" + "<td>" + bytearr[i + 2] + "</td><td>" + bytearr[i + 3] + "</td><td>" + bytearr[i + 4] + "</td><td>" + bytearr[i + 5] + "</td><td>" + bytearr[i + 6] + "</td><td>" + bytearr[i + 7] + "</td></tr>");
+
+
+            }
+
+
+        }, 1000);
+
+
+
+
+
+
+    });
 
 
 });
