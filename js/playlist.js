@@ -14,9 +14,20 @@ if(playlist_title)
 	};
 	playlist_add.onclick = add_playlist;
 }
-
-loadPlaylist();
-showPlaylist();
+if(window.location.href.includes("room.php"))
+{
+	if(getParam("id") == getCookie("Admin"))
+	{
+		loadPlaylist();
+		showPlaylist();
+	}
+	else inner_playlist.innerHTML = "- Nur der Admin kann Songs auswählen.";
+}
+else
+{
+	loadPlaylist();
+	showPlaylist();
+}
 
 function playPlaylist(p) {
 	if(Playlist[p][1].length == 0) return alert("Noch keinen Song hinzugefügt!");
@@ -48,11 +59,6 @@ function playSong(name,p=-1,sync=true,seek=0) {
 				playNextSong(name,0);
 			}
 		},100);
-		document.getElementById("audio-control-play-btn").click();
-		player.click();
-		document.getElementById("audio-control-play-btn").click();
-		player.play();
-		console.log("PRE-CLIK!");
 	}
 	player.play();
 	if(sync && typeof syncPlayer !== "undefined") syncPlayer(name,p);

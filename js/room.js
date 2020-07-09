@@ -1,4 +1,4 @@
-const channelID = parseInt(window.location.href.split("=")[1]);
+const channelID = parseInt(getParam("id"));
 
 function con_up(x,v) {
     
@@ -23,7 +23,6 @@ function escapeHtml(text) {
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
 }
-
 var websocket = new WebSocket("ws://"+window.location.host+":3000"); 
 websocket.onopen = function(ev) {
 	document.getElementById("oIcon").src = "img/online.png";
@@ -32,24 +31,29 @@ websocket.onopen = function(ev) {
 };
 websocket.onclose = websocket.onerror = function(ev) {
 	document.getElementById("oIcon").src = "img/offline.png";
+	document.cookie = '';
 	console.log("Error: "+ev);
 };
 websocket.onmessage = function(ev) {
-	const c = ev.data.charAt(0);
+	const c = parseInt(ev.data.charAt(0));
+	if(c==3) {
+		var splits = ev.data.split(" ");
+		setCookie("Admin", parseInt(splits[splits.length-1]));
+	}
 	var data = ev.data.substr(1,ev.data.length);
 	switch(c)
 	{
-		case '<': {
+		case 0: case 3: {
 			document.getElementById("chat-box").innerHTML += "<b>"+getStamp()+"</b>&nbsp;"+decodeURI(data)+"<hr>";
 			$('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
 			break;
 		}
-		case '>': {
+		case 1: {
 			var tmp = data.split("|");
 			playSong(tmp[0], tmp[1], false);
 			break;
 		}
-		case '%': {
+		case 2: {
 			var tmp = data.split("|");
 			playSong(tmp[0], tmp[1], false, tmp[2]);
 			break;
@@ -66,10 +70,35 @@ function getStamp()
 {
 	var d = new Date();
 	var h = d.getHours();
-	if(h.length == 1) h = "0"+h;
+	if(h < 10) h = "0"+h;
 	var min = d.getMinutes();
-	if(min.length == 1) min = "0"+min;
+	if(min < 10) min = "0"+min;
 	var sec = d.getSeconds();
-	if(sec.length == 1) sec = "0"+sec;
+	if(sec < 10) sec = "0"+sec;
 	return h+":"+min+":"+sec;
+}
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var ca = document.cookie.split(';');
+  for(var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+function setCookie(cname, cvalue) {
+  var d = new Date();
+  d.setTime(d.getTime() + (365*24*60*60*1000));
+  var expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+function getParam(param) {
+	var url = new URL(window.location.href);
+	return url.searchParams.get(param);
 }

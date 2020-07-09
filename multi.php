@@ -5,6 +5,12 @@
 	require_once('include/stuff.php');
 	
 	$project = 'AdvMultiComm';
+	
+	if(isset($_COOKIE["Admin"]))
+	{
+		header("location: room.php?id=".intval($_COOKIE["Admin"]));
+		exit;
+	}
 ?>	
 <!DOCTYPE html>
 <html lang="de">

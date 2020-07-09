@@ -2,6 +2,11 @@
 <?php
 require_once('include/stuff.php');
 
+if(!isset($_GET["id"]))
+{
+	header("location: multi.php");
+	exit;
+}
 $project = 'AdvMultiComm';
 ?>	
 <html>
@@ -212,7 +217,6 @@ $project = 'AdvMultiComm';
 		<script>
 		setTimeout(function() {
 			document.getElementById("init-btn").click();
-			console.log("Clicked!");
 		},150);
 		</script>
     </body>

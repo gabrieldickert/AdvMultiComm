@@ -27,10 +27,6 @@ $('document').ready(function (e) {
     //Addding Eventlistener on the Controlbutton
     $('#audio-control-play-btn').on('click', function (e) {
 
-
-        console.log("click");
-
-
         if (isPlaying) {
 
             $(this).find("i").removeClass("fa fa-play");
@@ -45,7 +41,7 @@ $('document').ready(function (e) {
             $(this).find("i").removeClass("fa fa-pause");
 
             $(this).find("i").addClass("fa fa-play");
-
+			websocket.send("s|"+channelID);
             resumeAudio();
         }
 
