@@ -386,7 +386,7 @@ $('document').ready(function (e) {
         //Draws white dot for Rewind / Forward
         canvasCtx.fillRect(width / 100 * prz, height / 2, 5, height / 2);
 
-        $('#audio-time-informs').html(Math.floor(current_time / 60) + ":" + current_time % 60 + "/" + Math.round(track_duration / 60) + ":" + (track_duration % 60));
+        $('#audio-time-informs').html(gV(Math.floor(current_time / 60)) + ":" + gV(current_time % 60) + "/" + gV(Math.round(track_duration / 60)) + ":" + gV((track_duration % 60)));
 
     }
 
@@ -664,6 +664,7 @@ $('document').ready(function (e) {
 
 
         audioCtx.resume();
+		document.getElementById("player").play();
 
         isPaused = false;
         isPlaying = true;
@@ -705,31 +706,48 @@ $('document').ready(function (e) {
     const player = document.getElementById('mic-player');
 
     var mic_analyser = null;
+	var mic = false;
     $('#mic-btn').on('click', function (e) {
-
+		mic = !mic;
+		if(mic) document.getElementById("mic-btn").getElementsByTagName("i")[0].className="fa fa-microphone";
+		else document.getElementById("mic-btn").getElementsByTagName("i")[0].className="fa fa-microphone-slash";
 
         MicAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         const source = MicAudioCtx.createMediaStreamSource(player.srcObject);
         const processor = MicAudioCtx.createScriptProcessor(512, 1, 1);
 
-
         mic_analyser = MicAudioCtx.createAnalyser();
+
 
         source.connect(processor).connect(mic_analyser);
         processor.connect(MicAudioCtx.destination);
-
+		var first = false;
         processor.onaudioprocess = function (e) {
-            // Do something with the data, e.g. convert it to WAV
+			if(!mic) return;
+			// get the average for the first channel
+			let float_arr = e.inputBuffer.getChannelData(0);
+
+            //Converting float Array to Unsigned Byte Array in Order to send the Chunks to channel
+            let byte_arr = new Uint8Array(float_arr);
 
 
+			if (source.playbackState == source.PLAYING_STATE) {
+				playByteArray(byte_arr);
+			}
+			/*
             let float_arr = e.inputBuffer.getChannelData(0);
 
             //Converting float Array to Unsigned Byte Array in Order to send the Chunks to channel
             let byte_arr = new Uint8Array(float_arr.buffer);
 
-
-            console.log(byte_arr);
+			var sum = 0;
+			for(let i=0; i<byte_arr.length; i++) sum += byte_arr[i];
+			if(sum > 260000) {
+				playByteArray(byte_arr);
+			}*/
+			
+			//websocket.send("m|"+decodeURI(byte_arr));
 
         };
 

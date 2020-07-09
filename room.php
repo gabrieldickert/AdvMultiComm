@@ -64,29 +64,24 @@ $project = 'AdvMultiComm';
 
 
 
-            <canvas id="audio_visual_player" width="300px" height="400px">
+            <canvas id="audio_visual_player" width="300px" height="400px" style="margin-bottom:30px;">
 
             </canvas>
 
-            <div class="container" style="background-color:#007bff;">
-
+            <div class="container" style="background-color:#007bff;border-radius:5px;">
                 <div class="row">
-                    <div class="col-md-2"><button id="audio-control-play-btn"><i class="fa fa-play"></i></button></div>
-                    <div class="col-md-2" id="audio-time-informs">--:--</div>
-                    <div class="col-md-4"><canvas id="audio-time-progress-bar" width="250px" height="10px"></canvas></div>
-                    <div class="col-md-1"><button id="audio-control-mute-btn"><i class="fa fa-volume-up"></i></button></div>
+                    <div class="col-md-1"><button id="audio-control-play-btn" style="background:rgba(0,0,0,0);border:0px;"><i class="fa fa-play"></i></button></div>
+                    <div class="col-md-2" id="audio-time-informs" style="color:white;margin-top:3.5px;">--:--</div>
+                    <div class="col-md-4"><canvas id="audio-time-progress-bar"  height="10" style="height:10px;margin-top:8.5px;"></canvas></div>
+                    <div class="col-md-3"><button id="audio-control-mute-btn" style="background:rgba(0,0,0,0);border:0px;"><i class="fa fa-volume-up"></i></button></div>
+					<div class="col-md-2"><button id="mic-btn" style="background:rgba(0,0,0,0);border:0px;"><i class="fa fa-microphone-slash"></i></button></div>
                 </div>
-
-                <audio id="mic-player" controls></audio>
-
-
-                <button id='mic-btn'>Init Mic</button>
-
             </div>
+			<audio id="mic-player" autoplay muted></audio>
             <p class="text-center" id="song_info" style="margin-top:30px;margin-bottom:-10px;font-weight:bold;display:none;">Playlist: abc - bird3.mp3</p>
-            <button id="nerd-stats-btn" data-toggle="modal" data-target="#nerdstatsmodal" class="btn btn-info">Statistics for Nerds</button>
+            <button id="nerd-stats-btn" style="margin-left:540px;margin-top:10px;" data-toggle="modal" data-target="#nerdstatsmodal" class="btn btn-info">Statistics for Nerds</button>
             <hr>
-            <button id="init-btn">Start WEB-Audio-API</button>
+            <button id="init-btn" style="display:none;">Start WEB-Audio-API</button>
             <table class="music_control">
                 <tr><td><b>Volume:</b></td><td><input id="volume_slider"type="range" step="1"  min="1" max="100" value="50" class="slider"></td><td id="s0">50%</td></tr>
                 <tr><td><b>Panning:</b></td><td><input id="panner_slider"type="range" step="0.01"  min="-1" max="1" value="0" class="slider"></td><td id="s1">0</td></tr>
@@ -207,12 +202,19 @@ $project = 'AdvMultiComm';
         </div>
 
 
-
+		<audio id="player2"></audio>
 
         <?php echo getFooter($project); ?>
+		<script src="js/playBytes.js"></script>
         <script src="js/room.js"></script>
         <script src="js/playlist.js"></script>
         <script src="js/audio.js"></script>
+		<script>
+		setTimeout(function() {
+			document.getElementById("init-btn").click();
+			console.log("Clicked!");
+		},150);
+		</script>
     </body>
 
 </html>

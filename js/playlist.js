@@ -1,23 +1,22 @@
 var playlist_add, playlist_title, inner_playlist,player,info;
 var Playlist=[];
-window.onload = function() {
-	if(document.getElementById("playlist_add")) playlist_add = document.getElementById("playlist_add");
-	if(document.getElementById("playlist_title")) playlist_title = document.getElementById("playlist_title");
-	inner_playlist = document.getElementById("inner_playlist");
-	player = document.getElementById("player");
-	info = document.getElementById("song_info");
-	
-	if(playlist_title)
-	{
-		playlist_title.onkeydown = function(e) {
-			if(e.keyCode == 13) add_playlist();
-		};
-		playlist_add.onclick = add_playlist;
-	}
-	
-	loadPlaylist();
-	showPlaylist();
-};
+
+if(document.getElementById("playlist_add")) playlist_add = document.getElementById("playlist_add");
+if(document.getElementById("playlist_title")) playlist_title = document.getElementById("playlist_title");
+inner_playlist = document.getElementById("inner_playlist");
+player = document.getElementById("player");
+info = document.getElementById("song_info");
+
+if(playlist_title)
+{
+	playlist_title.onkeydown = function(e) {
+		if(e.keyCode == 13) add_playlist();
+	};
+	playlist_add.onclick = add_playlist;
+}
+
+loadPlaylist();
+showPlaylist();
 
 function playPlaylist(p) {
 	if(Playlist[p][1].length == 0) return alert("Noch keinen Song hinzugefügt!");
@@ -33,12 +32,27 @@ function playNextSong(old,p) {
 	}
 	return 1;
 }
-
+function gV(x) {
+	if(isNaN(x)) return "00";
+	return (x < 10) ? ("0"+x) : x;
+}
 function playSong(name,p=-1,sync=true,seek=0) {
 	player.src = "http://"+window.location.hostname+":3000/stream/"+name;
-		if(seek != 0)
+	if(seek != 0)
 	{
 		player.currentTime = seek;
+		
+		setTimeout(function() {
+			if(seek >= Math.floor(player.duration) && !sync)
+			{
+				playNextSong(name,0);
+			}
+		},100);
+		document.getElementById("audio-control-play-btn").click();
+		player.click();
+		document.getElementById("audio-control-play-btn").click();
+		player.play();
+		console.log("PRE-CLIK!");
 	}
 	player.play();
 	if(sync && typeof syncPlayer !== "undefined") syncPlayer(name,p);
