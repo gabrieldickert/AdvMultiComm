@@ -54,7 +54,7 @@ $project = 'AdvMultiComm';
 
                         </div>
                         <hr>
-                        <div class="form-group" style="margin-bottom:-30px;">
+                        <div class="form-group">
                             <input type="text" class="form-control" id="chat" placeholder="Nachricht">
                         </div>
                     </div>
@@ -98,7 +98,7 @@ $project = 'AdvMultiComm';
                             <p class="" id="song_info" style="margin-top:1%;margin-bottom:-2%;font-weight:bold;display:none;">Playlist: abc - bird3.mp3</p>
                         </div>
                     </div>
-                    <div class="row" style="    background-color:#e5e5e5;">
+                    <div class="row" style=" background-color:#e5e5e5;">
                         <div class="col-lg-12 text-center ">
                             <button id="nerd-stats-btn" style="margin-top:2%;" data-toggle="modal" data-target="#nerdstatsmodal" class="btn btn-info pull-right">Statistics for Nerds</button>
                         </div>

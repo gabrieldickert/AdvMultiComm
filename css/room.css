@@ -37,6 +37,7 @@ body > .container {
 .song_list {
     text-align: center;
     background-color:#e5e5e5;
+       margin-top: 10%;
 	/*position:absolute;
 	top:115px;
 	padding:10px;
@@ -51,6 +52,7 @@ body > .container {
 .playlist {
     text-align: center;
     background-color:#e5e5e5;
+    margin-top: 10%;
 	/*margin-top:60px;
 	padding:10px;
 	width:18%;
