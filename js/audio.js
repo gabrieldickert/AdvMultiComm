@@ -22,8 +22,11 @@ $('document').ready(function (e) {
     var soundSource = null;
 
     var temp_arr = null;
+    
+    
 
 
+   
     //Addding Eventlistener on the Controlbutton
     $('#audio-control-play-btn').on('click', function (e) {
 
@@ -290,6 +293,11 @@ $('document').ready(function (e) {
         //Adding Nodes to the Audiocontext
         addVolumeToAudioCtx();
         addPanerToAudioCtx();
+        
+        //Setting Visualization  to Frequencybars as Default
+        analyseBytes();
+        //Changing Select Value to Frequencybars aswell
+        $('#waves').val("frequencybars");
 
 
 
@@ -378,7 +386,7 @@ $('document').ready(function (e) {
         canvasCtx.fillRect(0, height / 2, width / 100 * prz, height);
 
         canvasCtx.fillStyle = 'rgb(255,255,255)';
-
+       
         //Draws white dot for Rewind / Forward
         canvasCtx.fillRect(width / 100 * prz, height / 2, 5, height / 2);
 

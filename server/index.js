@@ -55,11 +55,6 @@ app.get("/files", function(req,res) {
 
 
 
-app.get("/room/:id/voice",function() {
-    
-    
-console.log("ha");
-});
 
 app.get("/stream/:song", function(req, res) {
 	mediaserver.pipe(req, res, 'music/'+req.params.song);

@@ -35,7 +35,9 @@ body > .container {
   background-color:#e5e5e5;
 }
 .song_list {
-	position:absolute;
+    text-align: center;
+    background-color:#e5e5e5;
+	/*position:absolute;
 	top:115px;
 	padding:10px;
 	width:15%;
@@ -44,10 +46,12 @@ body > .container {
 	border-radius:5px;
 	background-color:#e5e5e5;
 	text-align:center;
-	right:4%;
+	right:4%;*/
 }
 .playlist {
-	margin-top:60px;
+    text-align: center;
+    background-color:#e5e5e5;
+	/*margin-top:60px;
 	padding:10px;
 	width:18%;
 	padding-bottom:50px;
@@ -56,7 +60,7 @@ body > .container {
 	background-color:#e5e5e5;
 	position:absolute;
 	left:3%;
-	text-align:center;
+	text-align:center;*/
 }
 #inner_playlist {
 	overflow:auto;
@@ -165,7 +169,7 @@ td,th,tr {
 	border-radius:50%;
 	width:16px;
 	height:16px;
-	position:absolute;
+	position:relative;
 	left:10px;
 	top:10px;
 }
