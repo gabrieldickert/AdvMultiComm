@@ -20,7 +20,7 @@ $('document').ready(function (e) {
     var isMuted = false;
     var audio = null;
     var soundSource = null;
-
+    var splitter=null;
     var temp_arr = null;
     
     
@@ -257,7 +257,7 @@ $('document').ready(function (e) {
 
 
         soundSource = audioCtx.createBufferSource();
-        convolver.buffer = audio;
+         convolver.buffer = audio;
 
 
 
@@ -512,8 +512,9 @@ $('document').ready(function (e) {
         } else if (ocChange.target.value === "disablenormal") {
 
             biquadFilter.disconnect(0);
-
+            convolver.disconnect(0);    
             convolver.normalize = false;
+            
             track.connect(convolver).connect(audioCtx.destination);
             //convolver.connect(audioCtx.destination);
         } else {
@@ -576,34 +577,34 @@ $('document').ready(function (e) {
 
     };
 
-    visualConv.onchange = function (visconvEvent) {
+                    /*visualConv.onchange = function (visconvEvent) {
 
-        var WIDTH = 300;
-        var HEIGHT = 400;
-        if (visconvEvent.target.value === "frequencybars")
-        {
-            //clearInterval(frequenz_bar_interval_id);
-            clearInterval(sinuswave_interval_id);
-            analyseBytes();
-        } else if (visconvEvent.target.value === "sinewave") {
+                        var WIDTH = 300;
+                        var HEIGHT = 400;
+                        if (visconvEvent.target.value === "frequencybars")
+                        {
+                            //clearInterval(frequenz_bar_interval_id);
+                            clearInterval(sinuswave_interval_id);
+                            analyseBytes();
+                        } else if (visconvEvent.target.value === "sinewave") {
 
-            clearInterval(frequenz_bar_interval_id);
-            //clearInterval(sinuswave_interval_id);
+                            clearInterval(frequenz_bar_interval_id);
+                            //clearInterval(sinuswave_interval_id);
 
-            drawSinusWave();
+                            drawSinusWave();
 
 
-        } else {
+                        } else {
 
-            //TODO RESET CANVAS
+                            //TODO RESET CANVAS
 
-            clearInterval(frequenz_bar_interval_id);
-            clearInterval(sinuswave_interval_id);
-            console.log("No graph selected");
-            clearRectangle();
-        }
+                            clearInterval(frequenz_bar_interval_id);
+                            clearInterval(sinuswave_interval_id);
+                            console.log("No graph selected");
+                            clearRectangle();
+                        }
 
-    }
+                    }*/
 
 
 

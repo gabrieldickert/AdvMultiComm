@@ -118,20 +118,22 @@ $project = 'AdvMultiComm';
                                         <td id="s1">0</td>
                                     </tr>
                                     <tr>
-                                        <td id="filter"><b>BiQuadFilter:</b>     <select id ="BiQuadFilter" placeholder="BiQuadFilter">
+                                        <td id="filter"><b>BiQuadFilter:</b></td>     
+                                        <td> <select id ="BiQuadFilter" placeholder="BiQuadFilter">
                                                 <option value="lowfrequency">Low Frequency</option>
                                                 <option value="highfrequency" >High Frequency</option>
                                                 <option value="off" selected>Off</option>  
                                             </select>
                                         </td>
                                         <td></td>
-                                        <td id="bars"><b>Visualization:</b>
-                                            <select id="waves" placeholder="waves">
+                                        <tr>
+                                        <td id="bars"><b>Visualization:</b></td>
+                                            <td><select id="waves" placeholder="waves">
                                                 <option value="sinewave">Sinewave</option>
                                                 <option value="frequencybars" >Frequency bars</option>
                                                 <option value="off" selected>Off</option>  
                                             </select>
-                                        </td>
+                                        </td></tr>
                                     </tr>
                                     <tr><td><b>Convolver</b>
                                         </td>
@@ -142,19 +144,19 @@ $project = 'AdvMultiComm';
                                                 <option value="off" selected>Off</option>  
                                             </select>
 
-                                        <td id ="convolver">
+                                        <!--<td id ="convolver">
                                             <select id ="convolverwave" placeholder="">
                                                 <option value="sinewave">Sinewave</option>
                                                 <option value="frequencybars" >Frequency bars</option>
                                                 <option value="off" selected>Off</option>  
                                             </select>
-                                        </td>
+                                        </td>-->
                                     </tr>
                                     <tr>
 
                                         <td>
                                             <b>Oscillator_wave</b>
-                                            <input id="Oscillator_wave"type="range" step="0.1"  min="20" max="1000" value="440" class="slider">  
+                                            <input id="Oscillator_wave"type="range" step="0.01"  min="20" max="1000" value="440" class="slider">  
                                         </td>
                                         <td>
                                             <input type="text" id="freq" value="440" disabled>     
