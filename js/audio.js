@@ -1,5 +1,3 @@
-$('document').ready(function (e) {
-
 
     var audioCtx = null;
     var MicAudioCtx = null;
@@ -258,39 +256,8 @@ $('document').ready(function (e) {
 
         soundSource = audioCtx.createBufferSource();
          convolver.buffer = audio;
-
-
-
-
-//-------------Convolver Node---------------//
-
-        ajaxRequest = new XMLHttpRequest();
-
-        ajaxRequest.open('GET', 'http://localhost:3000/stream/birds.mp3', true);
-
-        ajaxRequest.responseType = 'arraybuffer';
-
-
-
-        ajaxRequest.onload = function () {
-            // debugger;
-            var audioData = ajaxRequest.response;
-            audioCtx.decodeAudioData(audioData, function (buffer) {
-                concertHallBuffer = buffer;
-                soundSource = audioCtx.createBufferSource();
-                //convolver.buffer = concertHallBuffer;
-                //soundSource.buffer=concertHallBuffer;
-
-            }, function (e) {
-                console.log("Error with decoding audio data" + e.err);
-            });
-
-        };
-
-        ajaxRequest.send();
-
-
-        //Adding Nodes to the Audiocontext
+		 
+		 //Adding Nodes to the Audiocontext
         addVolumeToAudioCtx();
         addPanerToAudioCtx();
         
@@ -311,6 +278,39 @@ $('document').ready(function (e) {
 
             drawAudioProgressBar();
         }, INTERVAL_REFRESH_MS_TIME);
+
+	}
+	
+	function convolverNode(url) {
+
+
+//-------------Convolver Node---------------//
+
+        ajaxRequest = new XMLHttpRequest();
+
+        ajaxRequest.open('GET', url, true);
+
+        ajaxRequest.responseType = 'arraybuffer';
+
+		console.log(url);
+
+        ajaxRequest.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				// debugger;
+				var audioData = this.response;
+				audioCtx.decodeAudioData(audioData, function (buffer) {
+					concertHallBuffer = buffer;
+					soundSource = audioCtx.createBufferSource();
+					//convolver.buffer = concertHallBuffer;
+					//soundSource.buffer=concertHallBuffer;
+
+				}, function (e) {
+					console.log("Error with decoding audio data" + e.err);
+				});
+			}
+        };
+
+        ajaxRequest.send();
 
     }
 
@@ -825,6 +825,3 @@ $('document').ready(function (e) {
         }, 1000);
 
     });
-
-
-});

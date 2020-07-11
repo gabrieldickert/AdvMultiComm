@@ -1,10 +1,10 @@
-var playlist_add, playlist_title, inner_playlist,player,info;
+var playlist_add, playlist_title, inner_playlist,_player,info;
 var Playlist=[];
 
 if(document.getElementById("playlist_add")) playlist_add = document.getElementById("playlist_add");
 if(document.getElementById("playlist_title")) playlist_title = document.getElementById("playlist_title");
 inner_playlist = document.getElementById("inner_playlist");
-player = document.getElementById("player");
+_player = document.getElementById("player");
 info = document.getElementById("song_info");
 
 if(playlist_title)
@@ -48,26 +48,27 @@ function gV(x) {
 	return (x < 10) ? ("0"+x) : x;
 }
 function playSong(name,p=-1,sync=true,seek=0) {
-	player.src = "http://"+window.location.hostname+":3000/stream/"+name;
+	_player.src = "http://"+window.location.hostname+":3000/stream/"+name;
+	convolverNode(_player.src);
 	if(seek != 0)
 	{
-		player.currentTime = seek;
+		_player.currentTime = seek;
 		
 		setTimeout(function() {
-			if(seek >= Math.floor(player.duration) && !sync)
+			if(seek >= Math.floor(_player.duration) && !sync)
 			{
 				playNextSong(name,0);
 			}
 		},100);
 	}
-	player.play();
+	_player.play();
 	if(sync && typeof syncPlayer !== "undefined") syncPlayer(name,p);
 	if(p == -1) info.innerHTML = name;
 	else {
 		info.innerHTML = "Playlist: "+((!sync)?p:Playlist[p][0])+" - "+name;
 		if(sync)
 		{
-			player.onended = function() {
+			_player.onended = function() {
 				playNextSong(name,p);
 			};
 		}

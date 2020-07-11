@@ -237,8 +237,9 @@ $project = 'AdvMultiComm';
         <?php echo getFooter($project); ?>
         <script src="js/playBytes.js"></script>
         <script src="js/room.js"></script>
+		<script src="js/audio.js"></script>
         <script src="js/playlist.js"></script>
-        <script src="js/audio.js"></script>
+        
         <script>
             setTimeout(function () {
                 document.getElementById("init-btn").click();
