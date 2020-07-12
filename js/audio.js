@@ -1,5 +1,3 @@
-$('document').ready(function (e) {
-
 
     var audioCtx = null;
     var MicAudioCtx = null;
@@ -20,16 +18,18 @@ $('document').ready(function (e) {
     var isMuted = false;
     var audio = null;
     var soundSource = null;
-
+    var splitter=null;
+    var merger = null;
     var temp_arr = null;
+    var splitterBuffer=null;
+    var mergerBuffer=null;
+    
+    
 
 
+   
     //Addding Eventlistener on the Controlbutton
     $('#audio-control-play-btn').on('click', function (e) {
-
-
-        console.log("click");
-
 
         if (isPlaying) {
 
@@ -45,7 +45,7 @@ $('document').ready(function (e) {
             $(this).find("i").removeClass("fa fa-pause");
 
             $(this).find("i").addClass("fa fa-play");
-
+			websocket.send("s|"+channelID);
             resumeAudio();
         }
 
@@ -257,43 +257,17 @@ $('document').ready(function (e) {
         $('#s1').html($('#panner_slider').val());
 
 
-        soundSource = audioCtx.createBufferSource();
-        convolver.buffer = audio;
-
-
-
-
-//-------------Convolver Node---------------//
-
-        ajaxRequest = new XMLHttpRequest();
-
-        ajaxRequest.open('GET', 'http://localhost:3000/stream/birds.mp3', true);
-
-        ajaxRequest.responseType = 'arraybuffer';
-
-
-
-        ajaxRequest.onload = function () {
-            // debugger;
-            var audioData = ajaxRequest.response;
-            audioCtx.decodeAudioData(audioData, function (buffer) {
-                concertHallBuffer = buffer;
-                soundSource = audioCtx.createBufferSource();
-                //convolver.buffer = concertHallBuffer;
-                //soundSource.buffer=concertHallBuffer;
-
-            }, function (e) {
-                console.log("Error with decoding audio data" + e.err);
-            });
-
-        };
-
-        ajaxRequest.send();
-
-
-        //Adding Nodes to the Audiocontext
+        //soundSource = audioCtx.createBufferSource();
+         //convolver.buffer = audio;
+		 
+		 //Adding Nodes to the Audiocontext
         addVolumeToAudioCtx();
         addPanerToAudioCtx();
+        
+        //Setting Visualization  to Frequencybars as Default
+        analyseBytes();
+        //Changing Select Value to Frequencybars aswell
+        $('#waves').val("frequencybars");
 
 
 
@@ -307,6 +281,48 @@ $('document').ready(function (e) {
 
             drawAudioProgressBar();
         }, INTERVAL_REFRESH_MS_TIME);
+
+	}
+	
+	function convolverNode(url) {
+
+
+//-------------Convolver Node---------------//
+
+        ajaxRequest = new XMLHttpRequest();
+
+        ajaxRequest.open('GET', url, true);
+
+        ajaxRequest.responseType = 'arraybuffer';
+
+		console.log(url);
+
+        ajaxRequest.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				// debugger;
+				var audioData = this.response;
+				audioCtx.decodeAudioData(audioData, function (buffer) {
+                    concertHallBuffer = buffer;
+                    
+					soundSource = audioCtx.createBufferSource();
+                    soundSource.buffer=buffer;
+                    splitter = audioCtx.createChannelSplitter(2);
+                    
+                   
+                    //splitter.buffer=buffer;
+                    merger = audioCtx.createChannelMerger(2);
+                    //merger.buffer=buffer;
+                                        
+                    //convolver.buffer = concertHallBuffer;
+					//soundSource.buffer=concertHallBuffer;
+
+				}, function (e) {
+					console.log("Error with decoding audio data" + e.err);
+				});
+			}
+        };
+
+        ajaxRequest.send();
 
     }
 
@@ -382,11 +398,11 @@ $('document').ready(function (e) {
         canvasCtx.fillRect(0, height / 2, width / 100 * prz, height);
 
         canvasCtx.fillStyle = 'rgb(255,255,255)';
-
+       
         //Draws white dot for Rewind / Forward
         canvasCtx.fillRect(width / 100 * prz, height / 2, 5, height / 2);
 
-        $('#audio-time-informs').html(Math.floor(current_time / 60) + ":" + current_time % 60 + "/" + Math.round(track_duration / 60) + ":" + (track_duration % 60));
+        $('#audio-time-informs').html(gV(Math.floor(current_time / 60)) + ":" + gV(current_time % 60) + "/" + gV(Math.round(track_duration / 60)) + ":" + gV((track_duration % 60)));
 
     }
 
@@ -499,18 +515,27 @@ $('document').ready(function (e) {
     var conv = document.getElementById("property");
     conv.onchange = function (ocChange) {
 
-
         if (ocChange.target.value === "reverb") {
             biquadFilter.disconnect(0);
 
             convolver.buffer = concertHallBuffer;
             track.connect(convolver).connect(audioCtx.destination);
         } else if (ocChange.target.value === "disablenormal") {
-
+            gainNode = audioCtx.createGain();
             biquadFilter.disconnect(0);
-
+            convolver.disconnect(0);    
             convolver.normalize = false;
-            track.connect(convolver).connect(audioCtx.destination);
+
+            
+            //splitterBuffer=splitter.buffer;
+            soundSource.connect(splitter);
+            mergerBuffer = merger.buffer;
+            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            splitter.connect(gainNode,0);
+            gainNode.connect(merger, 0, 1);
+            splitter.connect(merger,1,0);
+                        
+           merger.connect(audioCtx.destination);
             //convolver.connect(audioCtx.destination);
         } else {
             console.log("No Property Selected");
@@ -572,34 +597,34 @@ $('document').ready(function (e) {
 
     };
 
-    visualConv.onchange = function (visconvEvent) {
+                    /*visualConv.onchange = function (visconvEvent) {
 
-        var WIDTH = 300;
-        var HEIGHT = 400;
-        if (visconvEvent.target.value === "frequencybars")
-        {
-            //clearInterval(frequenz_bar_interval_id);
-            clearInterval(sinuswave_interval_id);
-            analyseBytes();
-        } else if (visconvEvent.target.value === "sinewave") {
+                        var WIDTH = 300;
+                        var HEIGHT = 400;
+                        if (visconvEvent.target.value === "frequencybars")
+                        {
+                            //clearInterval(frequenz_bar_interval_id);
+                            clearInterval(sinuswave_interval_id);
+                            analyseBytes();
+                        } else if (visconvEvent.target.value === "sinewave") {
 
-            clearInterval(frequenz_bar_interval_id);
-            //clearInterval(sinuswave_interval_id);
+                            clearInterval(frequenz_bar_interval_id);
+                            //clearInterval(sinuswave_interval_id);
 
-            drawSinusWave();
+                            drawSinusWave();
 
 
-        } else {
+                        } else {
 
-            //TODO RESET CANVAS
+                            //TODO RESET CANVAS
 
-            clearInterval(frequenz_bar_interval_id);
-            clearInterval(sinuswave_interval_id);
-            console.log("No graph selected");
-            clearRectangle();
-        }
+                            clearInterval(frequenz_bar_interval_id);
+                            clearInterval(sinuswave_interval_id);
+                            console.log("No graph selected");
+                            clearRectangle();
+                        }
 
-    }
+                    }*/
 
 
 
@@ -664,6 +689,7 @@ $('document').ready(function (e) {
 
 
         audioCtx.resume();
+		document.getElementById("player").play();
 
         isPaused = false;
         isPlaying = true;
@@ -705,31 +731,48 @@ $('document').ready(function (e) {
     const player = document.getElementById('mic-player');
 
     var mic_analyser = null;
+	var mic = false;
     $('#mic-btn').on('click', function (e) {
-
+		mic = !mic;
+		if(mic) document.getElementById("mic-btn").getElementsByTagName("i")[0].className="fa fa-microphone";
+		else document.getElementById("mic-btn").getElementsByTagName("i")[0].className="fa fa-microphone-slash";
 
         MicAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         const source = MicAudioCtx.createMediaStreamSource(player.srcObject);
         const processor = MicAudioCtx.createScriptProcessor(512, 1, 1);
 
-
         mic_analyser = MicAudioCtx.createAnalyser();
+
 
         source.connect(processor).connect(mic_analyser);
         processor.connect(MicAudioCtx.destination);
-
+		var first = false;
         processor.onaudioprocess = function (e) {
-            // Do something with the data, e.g. convert it to WAV
+			if(!mic) return;
+			// get the average for the first channel
+			let float_arr = e.inputBuffer.getChannelData(0);
+
+            //Converting float Array to Unsigned Byte Array in Order to send the Chunks to channel
+            let byte_arr = new Uint8Array(float_arr);
 
 
+			if (source.playbackState == source.PLAYING_STATE) {
+				playByteArray(byte_arr);
+			}
+			/*
             let float_arr = e.inputBuffer.getChannelData(0);
 
             //Converting float Array to Unsigned Byte Array in Order to send the Chunks to channel
             let byte_arr = new Uint8Array(float_arr.buffer);
 
-
-            console.log(byte_arr);
+			var sum = 0;
+			for(let i=0; i<byte_arr.length; i++) sum += byte_arr[i];
+			if(sum > 260000) {
+				playByteArray(byte_arr);
+			}*/
+			
+			//websocket.send("m|"+decodeURI(byte_arr));
 
         };
 
@@ -802,6 +845,3 @@ $('document').ready(function (e) {
         }, 1000);
 
     });
-
-
-});
