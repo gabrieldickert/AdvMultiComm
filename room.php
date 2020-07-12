@@ -2,6 +2,10 @@
 <?php
 require_once('include/stuff.php');
 
+if (!isset($_GET["id"])) {
+    header("location: multi.php");
+    exit;
+}
 $project = 'AdvMultiComm';
 ?>	
 <html>
@@ -37,125 +41,146 @@ $project = 'AdvMultiComm';
             </nav>
         </header>
 
-        <div class="playlist">
-            <img src="img/yellow.png" id="oIcon" class="online-icon" alt="icon">
-            <h3>Chat</h3>
-            <hr>
-            <div id="chat-box">
 
-            </div>
-            <hr>
-            <div class="form-group" style="margin-bottom:-30px;">
-                <input type="text" class="form-control" id="chat" placeholder="Nachricht">
-            </div>
-        </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="playlist">
+                                <img src="img/yellow.png" id="oIcon" class="online-icon" alt="icon">
 
-        <main role="main" class="container text-center">
-            <audio  id="player" style="margin-left:auto;margin-right:auto;display:block;" 
-                    controls
-                    src="-" 
-                    crossorigin="anonymous"
-                    type="audio/mp3" 
-                    hidden=""
-                    >
-                Ihr Browser kann dieses Tondokument nicht wiedergeben.
-            </audio>
+                        <h3>Chat</h3>
+                        <hr>
+                        <div id="chat-box">
 
-
-
-
-            <canvas id="audio_visual_player" width="300px" height="400px">
-
-            </canvas>
-
-            <div class="container" style="background-color:#007bff;">
-
-                <div class="row">
-                    <div class="col-md-2"><button id="audio-control-play-btn"><i class="fa fa-play"></i></button></div>
-                    <div class="col-md-2" id="audio-time-informs">--:--</div>
-                    <div class="col-md-4"><canvas id="audio-time-progress-bar" width="250px" height="10px"></canvas></div>
-                    <div class="col-md-1"><button id="audio-control-mute-btn"><i class="fa fa-volume-up"></i></button></div>
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="chat" placeholder="Nachricht">
+                        </div>
+                    </div>
                 </div>
+                <div class="col-lg-6">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <audio  id="player" style="margin-left:auto;margin-right:auto;display:block;" 
+                                    controls
+                                    src="-" 
+                                    crossorigin="anonymous"
+                                    type="audio/mp3" 
+                                    hidden=""
+                                    >
+                                Ihr Browser kann dieses Tondokument nicht wiedergeben.
+                            </audio>
+                        </div>
+                        <div class="col-lg-12">
+                            <audio id="mic-player" autoplay muted></audio>
+                        </div>
+                        <div class="col-lg-12 text-center">
 
-                <audio id="mic-player" controls></audio>
 
+                            <canvas id="audio_visual_player" width="300px" height="400px" style="margin-top:10%; margin-bottom: 10%;">
 
-                <button id='mic-btn'>Init Mic</button>
+                            </canvas>
 
+                        </div>
+                    </div>
+                    <div class="" style="background-color:#007bff;border-radius:5px;">
+                        <div class="row">
+                            <div class="col-md-1"><button id="audio-control-play-btn" style="background:rgba(0,0,0,0);border:0px;"><i class="fa fa-play"></i></button></div>
+                            <div class="col-md-2" id="audio-time-informs" style="color:white;margin-top:3.5px;">--:--</div>
+                            <div class="col-md-4"><canvas id="audio-time-progress-bar"  height="10" style="height:10px;margin-top:8.5px;"></canvas></div>
+                            <div class="col-md-3"><button id="audio-control-mute-btn" style="background:rgba(0,0,0,0);border:0px;"><i class="fa fa-volume-up"></i></button></div>
+                            <div class="col-md-2"><button id="mic-btn" style="background:rgba(0,0,0,0);border:0px;"><i class="fa fa-microphone-slash"></i></button></div>
+                        </div>
+                    </div>
+                    <div class="row" style="background-color:#e5e5e5; margin-top: 5%;">
+                        <div class="col-lg-12 text-center">
+                            <p class="" id="song_info" style="margin-top:1%;margin-bottom:-2%;font-weight:bold;display:none;">Playlist: abc - bird3.mp3</p>
+                        </div>
+                    </div>
+                    <div class="row" style=" background-color:#e5e5e5;">
+                        <div class="col-lg-12 text-center ">
+                            <button id="nerd-stats-btn" style="margin-top:2%;" data-toggle="modal" data-target="#nerdstatsmodal" class="btn btn-info pull-right">Statistics for Nerds</button>
+                        </div>
+                    </div>
+                    <div class="row" style="    background-color:#e5e5e5;">
+                        <div class="col-lg-12">
+                            <table class="table ">
+                                <tbody>
+                                    <tr>
+                                        <td><b>Volume:</b></td>
+                                        <td><input id="volume_slider"type="range" step="1"  min="1" max="100" value="50" class="slider"></td>
+                                        <td id="s0">50%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Panning:</b></td>
+                                        <td><input id="panner_slider"type="range" step="0.01"  min="-1" max="1" value="0" class="slider"></td>
+                                        <td id="s1">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td id="filter"><b>BiQuadFilter:</b></td>     
+                                        <td> <select id ="BiQuadFilter" placeholder="BiQuadFilter">
+                                                <option value="lowfrequency">Low Frequency</option>
+                                                <option value="highfrequency" >High Frequency</option>
+                                                <option value="off" selected>Off</option>  
+                                            </select>
+                                        </td>
+                                        <td></td>
+                                        <tr>
+                                        <td id="bars"><b>Visualization:</b></td>
+                                            <td><select id="waves" placeholder="waves">
+                                                <option value="sinewave">Sinewave</option>
+                                                <option value="frequencybars" >Frequency bars</option>
+                                                <option value="off" selected>Off</option>  
+                                            </select>
+                                        </td></tr>
+                                    </tr>
+                                    <tr><td><b>Convolver</b>
+                                        </td>
+                                        <td id="hf">
+                                            <select id="property">
+                                                <option value="reverb">Reverb Effect</option>
+                                                <option value="disablenormal" >Disable Normalization</option>
+                                                <option value="off" selected>Off</option>  
+                                            </select>
+
+                                        <!--<td id ="convolver">
+                                            <select id ="convolverwave" placeholder="">
+                                                <option value="sinewave">Sinewave</option>
+                                                <option value="frequencybars" >Frequency bars</option>
+                                                <option value="off" selected>Off</option>  
+                                            </select>
+                                        </td>-->
+                                    </tr>
+                                    <tr>
+
+                                        <td>
+                                            <b>Oscillator_wave</b>
+                                            <input id="Oscillator_wave"type="range" step="0.01"  min="20" max="1000" value="440" class="slider">  
+                                        </td>
+                                        <td>
+                                            <input type="text" id="freq" value="440" disabled>     
+                                        </td>
+                                        <td><input type="button" value="start" id="start"></td>
+                                    </tr>
+                                    <tr><td><b>Split me</b></td>
+                                    <td><input type="button" value="split" id="split"></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="song_list">
+                        <h3>Playlist</h3>
+                        <hr>
+                        <div id="inner_playlist"></div>
+                    </div>
+
+                </div>
             </div>
-            <p class="text-center" id="song_info" style="margin-top:30px;margin-bottom:-10px;font-weight:bold;display:none;">Playlist: abc - bird3.mp3</p>
-            <button id="nerd-stats-btn" data-toggle="modal" data-target="#nerdstatsmodal" class="btn btn-info">Statistics for Nerds</button>
-            <hr>
-            <button id="init-btn">Start WEB-Audio-API</button>
-            <table class="music_control">
-                <tr><td><b>Volume:</b></td><td><input id="volume_slider"type="range" step="1"  min="1" max="100" value="50" class="slider"></td><td id="s0">50%</td></tr>
-                <tr><td><b>Panning:</b></td><td><input id="panner_slider"type="range" step="0.01"  min="-1" max="1" value="0" class="slider"></td><td id="s1">0</td></tr>
-
-                <tr><td> <b>BiQuadFilter:</b>
-                    <td id ="filter">
-                        <select id ="BiQuadFilter" placeholder="BiQuadFilter">
-                            <option value="lowfrequency">Low Frequency</option>
-                            <option value="highfrequency" >High Frequency</option>
-                            <option value="off" selected>Off</option>  
-                        </select>
-                    </td>
-                    <td id="bars">
-                        <select id="waves" placeholder="waves">
-                            <option value="sinewave">Sinewave</option>
-                            <option value="frequencybars" >Frequency bars</option>
-                            <option value="off" selected>Off</option>  
-                        </select>
-                    </td>
-                    <!--<td>
-                      <input type="range" step="1" oninput= onchange="con_up(2,this.value);">
-                    </td>-->
-
-                </tr>
-              
-              <tr><td><b>Convolver</b>
-    </td>
-    <td id="hf">
-      <select id="property">
-                  <option value="reverb">Reverb Effect</option>
-                  <option value="disablenormal" >Disable Normalization</option>
-                  <option value="off" selected>Off</option>  
-      </select>
-            <td id ="convolver">
-                <select id ="convolverwave" placeholder="">
-                      <option value="sinewave">Sinewave</option>
-                      <option value="frequencybars" >Frequency bars</option>
-                      <option value="off" selected>Off</option>  
-                </select>
-            </td>
-                <!--<td>
-                  -<input type="range" step="1" oninput="con_up(3,this.value);" onchange="con_up(3,this.value)
-                </td>-->
-    
-    </tr>
-    <tr>
-      <td>
-        <b>Oscillator_wave</b>
-      </td>
-      <td>
-        <input id="Oscillator_wave"type="range" step="0.1"  min="20" max="1000" value="440" class="slider">  
-      </td>
-      <td>
-        <input type="text" id="freq" value="440" disabled>     
-      </td>
-      <td><input type="button" value="start" id="start"></td>
-      <td></td>
-    </tr>
-
-
-            </table>
-
-        </main>
-
-        <div class="song_list">
-            <h3>Playlist</h3>
-            <hr>
-            <div id="inner_playlist"></div>
         </div>
+
 
 
         <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
@@ -176,6 +201,8 @@ $project = 'AdvMultiComm';
                 </div>
             </div>
         </div>
+
+        <button id="init-btn" style="display:none;">Start WEB-Audio-API</button>
 
 
 
@@ -207,12 +234,19 @@ $project = 'AdvMultiComm';
         </div>
 
 
-
+        <audio id="player2"></audio>
 
         <?php echo getFooter($project); ?>
+        <script src="js/playBytes.js"></script>
         <script src="js/room.js"></script>
+		<script src="js/audio.js"></script>
         <script src="js/playlist.js"></script>
-        <script src="js/audio.js"></script>
+        
+        <script>
+            setTimeout(function () {
+                document.getElementById("init-btn").click();
+            }, 150);
+        </script>
     </body>
 
 </html>
