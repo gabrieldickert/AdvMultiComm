@@ -306,16 +306,7 @@
                     
 					soundSource = audioCtx.createBufferSource();
                     soundSource.buffer=buffer;
-                    splitter = audioCtx.createChannelSplitter(2);
-                    
-                   
-                    //splitter.buffer=buffer;
-                    merger = audioCtx.createChannelMerger(2);
-                    //merger.buffer=buffer;
-                                        
-                    //convolver.buffer = concertHallBuffer;
-					//soundSource.buffer=concertHallBuffer;
-
+                 
 				}, function (e) {
 					console.log("Error with decoding audio data" + e.err);
 				});
@@ -330,7 +321,7 @@
 
         oscillator = audioCtx.createOscillator();
         oscillator.connect(audioCtx.destination);
-        //oscillator.start(0);
+        
     }
 
     var oscw = document.getElementById("Oscillator_wave");
@@ -425,7 +416,7 @@
             var dataArray = new Uint8Array(bufferLength);
 
             canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
-            //drawVisual = requestAnimationFrame(draw);
+            
 
             analyser.getByteTimeDomainData(dataArray);
 
@@ -490,17 +481,68 @@
         }
 
     }
-    //********** commentieren wegen analyseBytes() function************//
+   
 
+    //********split function :*************//
+   
+    var splitme = document.getElementById("split");
+    
+    splitme.onclick= function(oSplitEvent){
+        if(oSplitEvent.target.value==="split Left")
+        {
+            gainNode.disconnect(0);
+            panner.disconnect(0);
+        
+                splitter = audioCtx.createChannelSplitter(2);
+                gainNode = audioCtx.createGain();
+                soundSource.connect(splitter);
+                
+                gainNode.gain.setValueAtTime(2, audioCtx.currentTime);
+                splitter.connect(gainNode,0);
+                track.connect(gainNode).connect(audioCtx.destination);
+                
+                oSplitEvent.target.value="Stop";
+                console.log(gainNode);
+        }
 
-    //     frequenz_bar_interval_id = setInterval(function () {
-    //     var bufferLength = analyser.frequencyBinCount;
-    //    var dataArray = new Uint8Array(bufferLength);
-    //   analyser.getByteFrequencyData(dataArray);
-    //  drawSound(dataArray);
-    // }, INTERVAL_REFRESH_MS_TIME);
-    //}
-    //;
+        else{
+
+            gainNode.disconnect();
+            oSplitEvent.target.value="split Left";
+            console.log(gainNode.disconnect());
+        }
+
+    }
+
+    var splitmeR = document.getElementById("splitR");
+    splitmeR.onclick= function(oSplitEvent){
+        
+        if(oSplitEvent.target.value==="split Right"){
+            gainNode.disconnect();
+            panner.disconnect();
+        
+                splitter = audioCtx.createChannelSplitter(2);
+                        
+                gainNode = audioCtx.createGain();
+                soundSource.connect(splitter);
+                    
+                gainNode.gain.setValueAtTime(4, audioCtx.currentTime);
+                splitter.connect(gainNode,1);
+
+                track.connect(gainNode).connect(audioCtx.destination);
+                oSplitEvent.target.value="Stop";
+                console.log(gainNode);
+        }
+
+        else{
+            gainNode.disconnect();
+            oSplitEvent.target.value="split Right";
+            console.log(gainNode);
+        }
+
+    }
+
+    /*******Calling BiQuadFilter Function */
 
     var voiceSelect = document.getElementById("BiQuadFilter");
 
@@ -510,7 +552,7 @@
     };
 
 
-
+/**********Selecting the Convolver Properties*******/
 
     var conv = document.getElementById("property");
     conv.onchange = function (ocChange) {
@@ -521,22 +563,11 @@
             convolver.buffer = concertHallBuffer;
             track.connect(convolver).connect(audioCtx.destination);
         } else if (ocChange.target.value === "disablenormal") {
-            gainNode = audioCtx.createGain();
+            
             biquadFilter.disconnect(0);
             convolver.disconnect(0);    
             convolver.normalize = false;
-
-            
-            //splitterBuffer=splitter.buffer;
-            soundSource.connect(splitter);
-            mergerBuffer = merger.buffer;
-            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-            splitter.connect(gainNode,0);
-            gainNode.connect(merger, 0, 1);
-            splitter.connect(merger,1,0);
-                        
-           merger.connect(audioCtx.destination);
-            //convolver.connect(audioCtx.destination);
+            track.connect(convolver).connect(audioCtx.destination);
         } else {
             console.log("No Property Selected");
             convolver.disconnect(0);
@@ -573,13 +604,13 @@
                 //selecting the waves function: Frequecy wave or sinuswave
 
                 {
-                    //clearInterval(frequenz_bar_interval_id);
+                    
                     clearInterval(sinuswave_interval_id);
                     analyseBytes();
                 } else if (visEvent.target.value === "sinewave") {
 
             clearInterval(frequenz_bar_interval_id);
-            //clearInterval(sinuswave_interval_id);
+           
 
             drawSinusWave();
 
@@ -597,37 +628,7 @@
 
     };
 
-                    /*visualConv.onchange = function (visconvEvent) {
-
-                        var WIDTH = 300;
-                        var HEIGHT = 400;
-                        if (visconvEvent.target.value === "frequencybars")
-                        {
-                            //clearInterval(frequenz_bar_interval_id);
-                            clearInterval(sinuswave_interval_id);
-                            analyseBytes();
-                        } else if (visconvEvent.target.value === "sinewave") {
-
-                            clearInterval(frequenz_bar_interval_id);
-                            //clearInterval(sinuswave_interval_id);
-
-                            drawSinusWave();
-
-
-                        } else {
-
-                            //TODO RESET CANVAS
-
-                            clearInterval(frequenz_bar_interval_id);
-                            clearInterval(sinuswave_interval_id);
-                            console.log("No graph selected");
-                            clearRectangle();
-                        }
-
-                    }*/
-
-
-
+                    
     function clearRectangle() {
         let canvasCtx = document.getElementById("audio_visual_player").getContext('2d');
         canvasCtx.clearRect(0, 0, 300, 400);
