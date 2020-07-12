@@ -49,7 +49,7 @@ function gV(x) {
 }
 function playSong(name,p=-1,sync=true,seek=0) {
 	_player.src = "http://"+window.location.hostname+":3000/stream/"+name;
-	convolverNode(_player.src);
+	if(typeof convolverNode !== "undefined") convolverNode(_player.src);
 	if(seek != 0)
 	{
 		_player.currentTime = seek;

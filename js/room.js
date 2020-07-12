@@ -39,6 +39,8 @@ websocket.onmessage = function(ev) {
 	if(c==3) {
 		var splits = ev.data.split(" ");
 		setCookie("Admin", parseInt(splits[splits.length-1]));
+		loadPlaylist();
+		showPlaylist();
 	}
 	var data = ev.data.substr(1,ev.data.length);
 	switch(c)

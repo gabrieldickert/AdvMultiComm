@@ -35,6 +35,7 @@ function refresh_rooms() {
 		url: 'http://'+window.location.hostname+':3000/rooms',
 		success: function(data) {
 			var infos = JSON.parse(data);
+			cards.innerHTML = '';
 			for(let i=0; i<infos.length; i++)
 			{
 				addCard(infos[i][0], infos[i][1], i);
