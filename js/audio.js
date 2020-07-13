@@ -19,7 +19,10 @@
     var audio = null;
     var soundSource = null;
     var splitter=null;
+    var merger = null;
     var temp_arr = null;
+    var splitterBuffer=null;
+    var mergerBuffer=null;
     
     
 
@@ -254,8 +257,8 @@
         $('#s1').html($('#panner_slider').val());
 
 
-        soundSource = audioCtx.createBufferSource();
-         convolver.buffer = audio;
+        //soundSource = audioCtx.createBufferSource();
+         //convolver.buffer = audio;
 		 
 		 //Adding Nodes to the Audiocontext
         addVolumeToAudioCtx();
@@ -299,9 +302,18 @@
 				// debugger;
 				var audioData = this.response;
 				audioCtx.decodeAudioData(audioData, function (buffer) {
-					concertHallBuffer = buffer;
+                    concertHallBuffer = buffer;
+                    
 					soundSource = audioCtx.createBufferSource();
-					//convolver.buffer = concertHallBuffer;
+                    soundSource.buffer=buffer;
+                    splitter = audioCtx.createChannelSplitter(2);
+                    
+                   
+                    //splitter.buffer=buffer;
+                    merger = audioCtx.createChannelMerger(2);
+                    //merger.buffer=buffer;
+                                        
+                    //convolver.buffer = concertHallBuffer;
 					//soundSource.buffer=concertHallBuffer;
 
 				}, function (e) {
@@ -503,19 +515,27 @@
     var conv = document.getElementById("property");
     conv.onchange = function (ocChange) {
 
-
         if (ocChange.target.value === "reverb") {
             biquadFilter.disconnect(0);
 
             convolver.buffer = concertHallBuffer;
             track.connect(convolver).connect(audioCtx.destination);
         } else if (ocChange.target.value === "disablenormal") {
-
+            gainNode = audioCtx.createGain();
             biquadFilter.disconnect(0);
             convolver.disconnect(0);    
             convolver.normalize = false;
+
             
-            track.connect(convolver).connect(audioCtx.destination);
+            //splitterBuffer=splitter.buffer;
+            soundSource.connect(splitter);
+            mergerBuffer = merger.buffer;
+            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            splitter.connect(gainNode,0);
+            gainNode.connect(merger, 0, 1);
+            splitter.connect(merger,1,0);
+                        
+           merger.connect(audioCtx.destination);
             //convolver.connect(audioCtx.destination);
         } else {
             console.log("No Property Selected");
