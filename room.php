@@ -163,8 +163,10 @@ $project = 'AdvMultiComm';
                                         </td>
                                         <td><input type="button" value="start" id="start"></td>
                                     </tr>
-                                    <tr><td><b>Split me</b></td>
-                                    <td><input type="button" value="split" id="split"></td></tr>
+                                    <td><b>Split me</b></td>
+                                    <td><input type="button" value="split Left" id="split"></td>
+                                    <td><input type="button" value="split Right" id="splitR"></td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
