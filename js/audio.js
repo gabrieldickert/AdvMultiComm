@@ -533,51 +533,7 @@ function unmuteAudio() {
     isMuted = false;
 }
 
-/**
- * Microphone Input
- */
 
-const player = document.getElementById('mic-player');
-var mic_analyser = null;
-var mic = false;
-$('#mic-btn').on('click', function (e) {
-    mic = !mic;
-    if (mic)
-        document.getElementById("mic-btn").getElementsByTagName("i")[0].className = "fa fa-microphone";
-    else
-        document.getElementById("mic-btn").getElementsByTagName("i")[0].className = "fa fa-microphone-slash";
-
-    MicAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const source = MicAudioCtx.createMediaStreamSource(player.srcObject);
-    const processor = MicAudioCtx.createScriptProcessor(512, 1, 1);
-    mic_analyser = MicAudioCtx.createAnalyser();
-    source.connect(processor).connect(mic_analyser);
-    processor.connect(MicAudioCtx.destination);
-    var first = false;
-    processor.onaudioprocess = function (e) {
-        if (!mic)
-            return;
-        // get the average for the first channel
-        let float_arr = e.inputBuffer.getChannelData(0);
-
-        //Converting float Array to Unsigned Byte Array in Order to send the Chunks to channel
-        let byte_arr = new Uint8Array(float_arr);
-        if (source.playbackState == source.PLAYING_STATE) {
-            playByteArray(byte_arr);
-        }    
-    };
-});
-
-const handleSuccess = function (stream) {
-    if (window.URL) {
-        player.srcObject = stream;
-    } else {
-        player.src = stream;
-    }
-};
-
-navigator.mediaDevices.getUserMedia({audio: true, video: false})
-        .then(handleSuccess);
 
 /*Stats for Nerds*/
 $('#nerd-stats-btn').on('click', function (e) {
