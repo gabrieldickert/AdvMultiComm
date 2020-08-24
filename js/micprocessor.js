@@ -38,7 +38,7 @@ navigator.mediaDevices.getUserMedia({audio: true}).then(async function (stream) 
     while(true) {
             mediaRecorder.start();
 
-    await sleep(500);
+    await sleep(250);
     mediaRecorder.stop();
 
 

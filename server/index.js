@@ -145,17 +145,63 @@ const mic_server = app.listen(3001, function () {
 
     console.log("Mic Server running on Port 3001");
 });
+
+
+
+var mic_rooms = [];
+var mic_data = [];
+var current_room = null;
+
 const mic_ws = new WebsocketServer({httpServer: mic_server});
 //mic_ws.binaryType = "arraybuffer";
 mic_ws.on('request', function (request) {
     const c = request.accept(null, request.origin);
     c.on('message', function (message) {
+        //    const x = message.utf8Data.split("|"); //example: c|channelID (to enter) ~ a|channelID|msg (to send msg)
+        // const cID = parseInt(x[0]);
+
+
 
 
         var buf = message['binaryData'];
         if (typeof buf !== 'undefined') {
+            
+            
+            c.send(current_room);
 
             c.send(buf);
+        } else {
+
+
+            let x = message.utf8Data.split("|");
+
+            let room_id = x[1];
+
+
+            switch (x[0]) {
+
+
+                case 'c':
+
+                    if (!mic_rooms.includes(room_id)) {
+
+
+                        mic_rooms.push(room_id);
+                    }
+                    break;
+                    
+                    
+                case 'b':
+                    
+                    
+                    current_room = mic_rooms[x[1]];
+            }
+
+
+
+
+
+            console.log(current_room);
         }
     })
 });

@@ -8,8 +8,8 @@
 	
 	if(isset($_COOKIE["Admin"]))
 	{
-		header("location: room.php?id=".intval($_COOKIE["Admin"]));
-		exit;
+		//header("location: room.php?id=".intval($_COOKIE["Admin"]));
+		//exit;
 	}
 ?>	
 <!DOCTYPE html>
