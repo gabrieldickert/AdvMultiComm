@@ -625,3 +625,5 @@ $('#nerd-stats-btn').on('click', function (e) {
         }
     });
 });
+
+initializeGraphs();
