@@ -1,5 +1,8 @@
 
 var inComingData = false;
+
+var isMicMuted = true;
+var isMicAudioMuted = false;
 var ws_mic = new WebSocket("ws://" + window.location.host + ":3001");
 ws_mic.onopen = function (ev) {
 
@@ -11,14 +14,40 @@ ws_mic.onopen = function (ev) {
 
 };
 
+
+
+$('#mic-btn').on('click', function (e) {
+
+
+
+
+    if ($('#mic-btn > i').hasClass("fa fa-microphone-slash")) {
+        $('#mic-btn > i').removeClass("fa fa-microphone-slash");
+        $('#mic-btn > i').addClass("fa fa-microphone");
+
+        isMicMuted = false;
+
+    } else {
+        $('#mic-btn > i').removeClass("fa fa-microphone");
+        $('#mic-btn > i').addClass("fa fa-microphone-slash");
+
+        isMicMuted = true;
+
+
+    }
+
+    //console.log(    $('#mic-btn > i').hasClass("fa fa-microphone-slash"));
+    // console.log("MIC");
+});
+
 ws_mic.onmessage = function (ev) {
 
 
 
 
     if (ev.data == channelID) {
-        
-   
+
+
 
 
         inComingData = true;
@@ -57,8 +86,14 @@ navigator.mediaDevices.getUserMedia({audio: true}).then(async function (stream) 
 
         // let channelID = parseInt(getParam("id"));
 
-        ws_mic.send("b|" + channelID);
-        ws_mic.send(e.data);
+
+        if (!isMicMuted) {
+
+            ws_mic.send("b|" + channelID);
+            ws_mic.send(e.data);
+
+        }
+
 
         // ws_mic.send(e.data);
 
@@ -69,10 +104,17 @@ navigator.mediaDevices.getUserMedia({audio: true}).then(async function (stream) 
 
 
     while (true) {
+
+
+
+
+
         mediaRecorder.start();
 
         await sleep(250);
         mediaRecorder.stop();
+
+
 
 
 

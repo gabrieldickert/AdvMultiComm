@@ -1,4 +1,4 @@
-    <div class="footer-dark">
+  <!--  <div class="footer-dark ">
         <footer>
             <div class="container">
                 <div class="row">
@@ -7,7 +7,17 @@
                         <p>Diese Webseite enstand im Rahmen des Mastermoduls Advanced Multimedia Communcations </p>
                     </div>
                 </div>
-                <p class="copyright"> Fuldasound © <?php  echo(date("Y"));?></p>
+                <p class="copyright"> Fuldasound © </p>
             </div>
         </footer>
-    </div>
+    </div>-->
+  
+  
+  <!-- Footer -->
+<footer class="page-footer text-center font-small mdb-color lighten-3 pt-4" style="background-color: whitesmoke;">
+  <div class="container text-center text-md-center"></div>
+  <div class="footer-copyright text-center py-3">© <?php  echo(date("Y"));?> AMV
+    <a href="https://fuldastream.com/">Fuldastream</a>
+  </div>
+</footer>
+<!-- Footer -->
