@@ -46,7 +46,7 @@ function refresh_rooms() {
 
 function addCard(name, title, x) {
 	cards.innerHTML += '<div class="card" style="width: 18rem;"> \
-<img class="card-img-top" src="img/note.png" alt="Card image cap"> \
+<img class="card-img-top" src="img/note.png" height="250px" alt="Card image cap"> \
   <div class="card-body"> \
     <h5 class="card-title">'+name+'</h5>\
     <p class="card-text">'+title+'</p>\

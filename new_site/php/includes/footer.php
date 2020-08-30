@@ -14,10 +14,9 @@
   
   
   <!-- Footer -->
-<footer class="page-footer text-center font-small mdb-color lighten-3 pt-4" style="background-color: whitesmoke;">
+<footer class="page-footer text-center font-small mdb-color lighten-3 pt-4" style="background-color: #66CC33; color:white;">
   <div class="container text-center text-md-center"></div>
   <div class="footer-copyright text-center py-3">© <?php  echo(date("Y"));?> AMV
-    <a href="https://fuldastream.com/">Fuldastream</a>
   </div>
 </footer>
 <!-- Footer -->

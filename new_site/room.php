@@ -109,7 +109,8 @@ if (!isset($_GET["id"])) {
                                                 <option value="frequencybars" >Frequency bars</option>
                                                 <option value="off" selected>Off</option>  
                                             </select>
-                                        </td></tr>
+                                        </td>
+                                        <td></td></tr>
                                     </tr>
                                     <tr><td><b>Convolver</b>
                                         </td>
@@ -119,6 +120,9 @@ if (!isset($_GET["id"])) {
                                                 <option value="disablenormal" >Disable Normalization</option>
                                                 <option value="off" selected>Off</option>  
                                             </select>
+                                            
+                                        </td>
+                                        <td></td>
 
                                         <!--<td id ="convolver">
                                             <select id ="convolverwave" placeholder="">
