@@ -20,9 +20,6 @@ const sleep = time => new Promise(resolve => setTimeout(resolve, time));
 navigator.mediaDevices.getUserMedia({audio: true}).then(async function (stream) {
 
     let mediaRecorder = new MediaRecorder(stream);
-    let audioChunks = [];
-
-
 
     mediaRecorder.ondataavailable = function (e) {
 
@@ -31,14 +28,10 @@ navigator.mediaDevices.getUserMedia({audio: true}).then(async function (stream) 
 
     };
 
-
-    
-    
-    
     while(true) {
             mediaRecorder.start();
 
-    await sleep(250);
+    await sleep(150);
     mediaRecorder.stop();
 
 

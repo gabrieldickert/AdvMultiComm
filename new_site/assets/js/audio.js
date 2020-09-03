@@ -88,7 +88,7 @@ $('#audio-control-unmute-btn').on('click', function (e) {
 /**
  * Draws the Progress of the Audio-Bar
  */
-$('#audio-time-progress-bar').on('click', function (e) {
+/*$('#audio-time-progress-bar').on('click', function (e) {
 
     //Clearing the current Intervall
     let canvasCtx = document.getElementById("audio-time-progress-bar").getContext('2d');
@@ -106,7 +106,7 @@ $('#audio-time-progress-bar').on('click', function (e) {
     let audio_prz = track_duration / 100 * cax;
     let player = document.getElementById("player");
     player.currentTime = audio_prz;
-});
+});*/
 
 //calling the graph on the volume and changing the volume
 $('#volume_slider').on('input', function (e) {
@@ -351,7 +351,7 @@ function drawAudioProgressBar() {
 function drawSinusWave() {
     sinuswave_interval_id = setInterval(function (e) {
         console.log("SINUS");
-        let WIDTH = 300;
+        let WIDTH = 600;
         let HEIGHT = 400;
         let canvasCtx = document.getElementById("audio_visual_player").getContext('2d');
         analyser.fftSize = 2048;
@@ -447,7 +447,7 @@ clearRectangle();
 var visualSelect = document.getElementById("waves");
 var visualConv = document.getElementById("convolverwave");
 visualSelect.onchange = function (visEvent) {
-    var WIDTH = 300;
+    var WIDTH = 600;
     var HEIGHT = 400;
     if (visEvent.target.value === "frequencybars")
             //selecting the waves function: Frequecy wave or sinuswave
@@ -468,7 +468,7 @@ visualSelect.onchange = function (visEvent) {
 
 function clearRectangle() {
     let canvasCtx = document.getElementById("audio_visual_player").getContext('2d');
-    canvasCtx.clearRect(0, 0, 300, 400);
+    canvasCtx.clearRect(0, 0, 600, 400);
 }
 
 /**
@@ -478,7 +478,7 @@ function clearRectangle() {
 function drawSound(dataArray) {
     let canvasCtx = document.getElementById("audio_visual_player").getContext('2d');
     canvasCtx.fillStyle = 'rgb(0, 0, 0)';
-    canvasCtx.fillRect(0, 0, 300, 400);
+    canvasCtx.fillRect(0, 0, 600, 400);
     analyser.fftSize = 256;
     let bufferLength = 128;
     var barWidth = (300 / bufferLength) * 2.5;

@@ -69,7 +69,7 @@ $('document').ready(function (e) {
     });
 
     //Eventlistener on Click of Progressbar
-    $('#audio-time-progress-bar').on('click', function (e) {
+   /* $('#audio-time-progress-bar').on('click', function (e) {
 
         //Clearing the current Intervall
         // clearInterval(audio_times_interval_id);
@@ -102,7 +102,7 @@ $('document').ready(function (e) {
 
         player.currentTime = audio_prz;
 
-    });
+    });*/
 
 
     //changing the volume
