@@ -244,7 +244,7 @@ $project = 'AdvMultiComm';
         <?php echo getFooter($project); ?>
         <script src="js/playBytes.js"></script>
         <script src="js/room.js"></script>
-        <script src="node_modules/chart.js/dist/Chart.bundle.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js"></script>
         <script src="js/stats-graph.js"></script>
 		<script src="js/audio.js"></script>
         <script src="js/playlist.js"></script>
