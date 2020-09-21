@@ -228,6 +228,9 @@ $project = 'AdvMultiComm';
                             <tbody></tbody>
                         </table>
                     </div>
+                    <div class="modal-body" id="graph-space">
+                        <canvas id="buffered-parts-chart" width="200" height="100"></canvas>
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
                     </div>
@@ -241,6 +244,8 @@ $project = 'AdvMultiComm';
         <?php echo getFooter($project); ?>
          
         <script src="js/room.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js"></script>
+        <script src="js/stats-graph.js"></script>
 		<script src="js/audio.js"></script>
         <script src="js/playlist.js"></script>
       
