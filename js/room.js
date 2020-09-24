@@ -42,6 +42,10 @@ websocket.onmessage = function(ev) {
 		loadPlaylist();
 		showPlaylist();
 	}
+	/*if(c==6) {
+		pauseAudio();
+		return;
+	}*/
 	var data = ev.data.substr(1,ev.data.length);
 	switch(c)
 	{
@@ -58,6 +62,14 @@ websocket.onmessage = function(ev) {
 		case 2: {
 			var tmp = data.split("|");
 			playSong(tmp[0], tmp[1], false, tmp[2]);
+			break;
+		}
+		case 4: {
+			syncGainNode(data);
+			break;
+		}
+		case 5: {
+			syncPanning(data);
 			break;
 		}
 	}

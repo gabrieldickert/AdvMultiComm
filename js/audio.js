@@ -31,11 +31,10 @@
 $('#audio-control-play-btn').on('click', function (e) {
 
     if (isPlaying) {
+		//websocket.send("z|" + channelID);
+		$(this).find("i").removeClass("fa fa-play");
 
-        $(this).find("i").removeClass("fa fa-play");
-
-        $(this).find("i").addClass("fa fa-pause");
-
+		$(this).find("i").addClass("fa fa-pause");
         pauseAudio();
 
     } else if (isPaused) {
@@ -47,7 +46,6 @@ $('#audio-control-play-btn').on('click', function (e) {
         websocket.send("s|" + channelID);
         resumeAudio();
     }
-
 });
 
 
@@ -110,15 +108,36 @@ $('#audio-time-progress-bar').on('click', function (e) {
 
 //calling the graph on the volume and changing the volume
 $('#volume_slider').on('input', function (e) {
-    var current_val = $('#volume_slider').val();
-    var applied_gain = current_val / 100;
-    gainNode.gain.value = applied_gain;
+    const current_val = $('#volume_slider').val()/100;
+	if(getParam("id") == getCookie("Admin"))
+	{
+		websocket.send("v|"+parseInt(getParam("id"))+"|"+current_val);
+	}
+	else syncGainNode(current_val);
 });
+
+
+function syncGainNode(value) {
+	$('#s0').text(Math.floor(value*100)+"%");
+	$('#volume_slider').val(value*100);
+	gainNode.gain.value = value;
+}
 
 
 $('#panner_slider').on('input', function (e) {
-    onPanningChanged($('#panner_slider').val());
+	const value = $('#panner_slider').val();
+	if(getParam("id") == getCookie("Admin"))
+	{
+		websocket.send("w|"+parseInt(getParam("id"))+"|"+value);
+		return;
+	}
+    else onPanningChanged(value);
 });
+
+function syncPanning(value) {
+	$('#panner_slider').val(value);
+	onPanningChanged(value);
+}
 
 /**
  *  adds a Panner to the AudioContext
@@ -132,12 +151,6 @@ function addPanerToAudioCtx() {
 
 $('#init-btn').on('click', function (e) {
     initAudioCtx();
-});
-
-$('#volume_slider').on('input', function (e) {
-    let current_val = $('#volume_slider').val();
-    let applied_gain = current_val / 100;
-    $('#s0').html(Math.floor(applied_gain * 100) + "%");
 });
 
 
@@ -162,7 +175,7 @@ function addVolumeToAudioCtx() {
 
 function onPanningChanged(value) {
     panner.pan.value = value;
-    $('#s1').html("" + value);
+    $('#s1').text("" + value);
     console.log(audioCtx);
 }
 
@@ -180,7 +193,7 @@ function initAudioCtx() {
     analyser.fftSize = 256;
     let audioElement = document.querySelector('audio');
     track = audioCtx.createMediaElementSource(audioElement);
-    $('#s1').html($('#panner_slider').val());
+    $('#s1').text($('#panner_slider').val());
     convolver.buffer = audio;
     //Adding Nodes to the Audiocontext
     addVolumeToAudioCtx();
@@ -498,7 +511,7 @@ function drawSound(dataArray) {
  * Stops the Audio
  * 
  */
-function pauseAudio() {
+function pauseAudio() {	
     audioCtx.suspend();
     isPlaying = false;
     isPaused = true;

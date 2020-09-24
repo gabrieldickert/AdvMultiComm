@@ -87,11 +87,12 @@ app.post("/rooms", function (req, res) {
 //Websocket
 const WebsocketServer = require('websocket').server;
 
+const wsServer = new WebsocketServer({httpServer: server});
+
+
 var rooms = [];
 
 var music = [];
-
-const wsServer = new WebsocketServer({httpServer: server});
 
 wsServer.on('request', function (request) {
     const c = request.accept(null, request.origin);
@@ -132,6 +133,24 @@ wsServer.on('request', function (request) {
                 c.sendUTF("2" + music[cID][0] + "|" + music[cID][1] + "|" + Math.round(((+new Date()) - music[cID][2]) / 1000));
                 break;
             }
+			case 'v': {
+				for (var i = 0; i < rooms[cID].length; i++) {
+                    rooms[cID][i].sendUTF("4" + x[2]);
+                }
+                break;
+			}
+			case 'w': {
+				for (var i = 0; i < rooms[cID].length; i++) {
+                    rooms[cID][i].sendUTF("5" + x[2]);
+                }
+                break;
+			}
+			case 'z': {
+				for (var i = 0; i < rooms[cID].length; i++) {
+                    rooms[cID][i].sendUTF("6");
+                }
+                break;
+			}
         }
     });
 
@@ -160,48 +179,33 @@ mic_ws.on('request', function (request) {
         //    const x = message.utf8Data.split("|"); //example: c|channelID (to enter) ~ a|channelID|msg (to send msg)
         // const cID = parseInt(x[0]);
 
-
-
-
         var buf = message['binaryData'];
         if (typeof buf !== 'undefined') {
             
-            
-            c.send(current_room);
-
+            //c.send(current_room);
             c.send(buf);
         } else {
 
 
             let x = message.utf8Data.split("|");
-
+			console.log(x);
             let room_id = x[1];
 
 
             switch (x[0]) {
-
-
-                case 'c':
-
+                case 'c': {
                     if (!mic_rooms.includes(room_id)) {
-
-
                         mic_rooms.push(room_id);
                     }
                     break;
-                    
-                    
-                case 'b':
-                    
-                    
+				}
+                case 'b': {
                     current_room = mic_rooms[x[1]];
+					break;
+				}
             }
 
-
-
-
-
-            console.log(current_room);
+            console.log("Error:" +current_room);
         }
     })
 });
