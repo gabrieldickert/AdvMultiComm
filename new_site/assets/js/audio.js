@@ -174,14 +174,20 @@ function initAudioCtx() {
     analyser = audioCtx.createAnalyser();
     //creating a biQuadFiltermethod for the BiquadFilterNode
     biquadFilter = audioCtx.createBiquadFilter();
-    convolver = audioCtx.createConvolver();
+    
+    
+    //var c = new AudioContext();
+    //convolver = c.createConvolver();
+    //var b = c.createBuffer(1, 100, c.sampleRate);
+    //convolver= c;
+
     isMuted = false;
     isPlaying = true;
     analyser.fftSize = 256;
     let audioElement = document.querySelector('audio');
     track = audioCtx.createMediaElementSource(audioElement);
     $('#s1').html($('#panner_slider').val());
-    convolver.buffer = audio;
+    //convolver.buffer = audio;
     //Adding Nodes to the Audiocontext
     addVolumeToAudioCtx();
     addPanerToAudioCtx();
@@ -210,23 +216,27 @@ function convolverNode(url) {
     ajaxRequest.open('GET', url, true);
     ajaxRequest.responseType = 'arraybuffer';
     console.log(url);
+    var audioData = ajaxRequest.response;
+    console.log(audioData);
+
     ajaxRequest.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-            var audioData = this.response;
+            audioData = this.response;
             audioCtx.decodeAudioData(audioData, function (buffer) {
+                convolver = audioCtx.createConvolver();
                 soundSource = audioCtx.createBufferSource();
+                soundSource.buffer = buffer;
+                //convolver.buffer = buffer;
                 concertHallBuffer = buffer;
-                //convolver.buffer = concertHallBuffer;
-                soundSource.buffer=concertHallBuffer;
-            }, function (e) {
-                console.log("Error with decoding audio data" + e.err);
-            });
-        }
-    };
+            }, function (e) { console.log("Error with decoding audio data" + e.err); });
 
+        } //soundSource.connect(audioCtx.destination);
+        //soundSource.loop = true;
+        //soundSource.start();
+    };
     ajaxRequest.send();
 
-}
+}   
 
 function onOscillation() {
 
@@ -419,15 +429,19 @@ conv.onchange = function (ocChange) {
         biquadFilter.disconnect(0);
         convolver.buffer = concertHallBuffer;
         track.connect(convolver).connect(audioCtx.destination);
+        //convolver.connect(audioCtx.destination);
     } else if (ocChange.target.value === "disablenormal") {
         biquadFilter.disconnect(0);
-        //convolver.disconnect(0);
+        convolver.disconnect(0);
         convolver.normalize = false;
+
+        convolver.buffer = concertHallBuffer;
         track.connect(convolver).connect(audioCtx.destination);
         //convolver.connect(audioCtx.destination);
     } else {
         console.log("No Property Selected");
         convolver.disconnect(0);
+        track.connect(audioCtx.destination);
     }
 }
 
