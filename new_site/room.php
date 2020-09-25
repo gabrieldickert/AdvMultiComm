@@ -216,6 +216,9 @@ if (!isset($_GET["id"])) {
                                 <tbody></tbody>
                             </table>
                         </div>
+						<div class="modal-body" id="graph-space">
+							<canvas id="buffered-parts-chart" width="200" height="100"></canvas>
+						</div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
                         </div>
@@ -236,12 +239,14 @@ if (!isset($_GET["id"])) {
         <script src="assets/js/room.js"></script>
         <script src="assets/js/audio.js"></script>
         <script src="assets/js/playlist.js"></script>
-
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js"></script>
+        <script src="assets/js/stats-graph.js"></script>
 
         <script>
             setTimeout(function () {
                 document.getElementById("init-btn").click();
             }, 150);
+            initializeGraphs();
         </script>
 
         <script src="assets/js/micprocessor.js"></script>
