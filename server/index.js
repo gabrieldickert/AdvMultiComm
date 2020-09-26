@@ -186,6 +186,7 @@ var mic_data = [];
 var current_room = null;
 
 const mic_ws = new WebsocketServer({httpServer: mic_server});
+
 //mic_ws.binaryType = "arraybuffer";
 mic_ws.on('request', function (request) {
     const c = request.accept(null, request.origin);
@@ -197,6 +198,7 @@ mic_ws.on('request', function (request) {
 			const cID = 0;
 			if(mic_rooms.length < cID + 1) return;
 			for (var i = 0; i < mic_rooms[cID].length; i++) {
+				if(mic_rooms[cID][i] == c) continue;
 				mic_rooms[cID][i].send(buf);
 			}
         } else {
@@ -207,7 +209,7 @@ mic_ws.on('request', function (request) {
 					if (mic_rooms.length < cID + 1) {
 						mic_rooms.push([c]);
 					} else {
-						if(mic_rooms[cID].includes(c)) return;
+						if(in_array(c)) return;
 						mic_rooms[cID].push(c);
 					}						
                     break;
@@ -216,5 +218,12 @@ mic_ws.on('request', function (request) {
         }
     })
 });
+
+
+function in_array(x) {
+	for(let i=0; i<mic_rooms.length; i++) if(mic_rooms[0][i] == x) return 1;
+	return 0;
+}
+
 
 
