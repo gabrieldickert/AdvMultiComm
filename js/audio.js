@@ -187,14 +187,14 @@ function initAudioCtx() {
     analyser = audioCtx.createAnalyser();
     //creating a biQuadFiltermethod for the BiquadFilterNode
     biquadFilter = audioCtx.createBiquadFilter();
-    convolver = audioCtx.createConvolver();
+    //convolver = audioCtx.createConvolver();
     isMuted = false;
     isPlaying = true;
     analyser.fftSize = 256;
     let audioElement = document.querySelector('audio');
     track = audioCtx.createMediaElementSource(audioElement);
     $('#s1').text($('#panner_slider').val());
-    convolver.buffer = audio;
+    //convolver.buffer = audio;
     //Adding Nodes to the Audiocontext
     addVolumeToAudioCtx();
     addPanerToAudioCtx();
@@ -219,27 +219,32 @@ function initAudioCtx() {
 * */
 
 function convolverNode(url) {
-    ajaxRequest = new XMLHttpRequest();
-    ajaxRequest.open('GET', url, true);
-    ajaxRequest.responseType = 'arraybuffer';
-    console.log(url);
-    ajaxRequest.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            var audioData = this.response;
-            audioCtx.decodeAudioData(audioData, function (buffer) {
-                soundSource = audioCtx.createBufferSource();
-                concertHallBuffer = buffer;
-                //convolver.buffer = concertHallBuffer;
-                soundSource.buffer=concertHallBuffer;
-            }, function (e) {
-                console.log("Error with decoding audio data" + e.err);
-            });
+  ajaxRequest = new XMLHttpRequest();
+  ajaxRequest.open("GET", url, true);
+  ajaxRequest.responseType = "arraybuffer";
+  console.log(url);
+  var audioData = ajaxRequest.response;
+  console.log(audioData);
+  ajaxRequest.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200) {
+      audioData = this.response;
+      audioCtx.decodeAudioData(audioData, function (buffer) {
+          convolver = audioCtx.createConvolver();
+          soundSource = audioCtx.createBufferSource();
+          soundSource.buffer = buffer;
+          //convolver.buffer = buffer;
+          concertHallBuffer = buffer;
+        },
+        function (e) {
+          console.log("Error with decoding audio data" + e.err);
         }
-    };
-
-    ajaxRequest.send();
-
-}
+      );
+    } //soundSource.connect(audioCtx.destination);
+    //soundSource.loop = true;
+    //soundSource.start();
+  };
+  ajaxRequest.send();
+} 
 
 function onOscillation() {
 
@@ -398,51 +403,72 @@ function drawSinusWave() {
 
 //-----------Creating Biquad Filter Actions------------//
 function onBiquadFilter() {
-    biquadFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0)
-    var voiceSetting = voiceSelect.value;
-    console.log(voiceSetting);
-    if (voiceSetting == "lowfrequency") {
-        convolver.disconnect(0);
-        biquadFilter.type = "lowshelf";
-        biquadFilter.frequency.setTargetAtTime(500, audioCtx.currentTime, 0)
-        biquadFilter.gain.setTargetAtTime(25, audioCtx.currentTime, 0)
-        //biquadFilter.connect(audioCtx.destination);
-        track.connect(biquadFilter).connect(audioCtx.destination);
-    } else if (voiceSetting == "highfrequency") {
-        convolver.disconnect(0);
-        biquadFilter.type = "highshelf";
-        biquadFilter.frequency.setTargetAtTime(1000, audioCtx.currentTime, 0)
-        biquadFilter.gain.setTargetAtTime(25, audioCtx.currentTime, 0)
-        //biquadFilter.connect(audioCtx.destination);
-        track.connect(biquadFilter).connect(audioCtx.destination);
-    } else {
-        biquadFilter.disconnect(0);
-        console.log("Voice settings turned off");
-    }
+  biquadFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0);
+  var voiceSetting = shelfSelect.value;
+  console.log(voiceSetting);
+  if (voiceSetting == "lowshelf") {
+    convolver.disconnect(0);
+    biquadFilter.type = "lowshelf";
+    biquadFilter.frequency.setTargetAtTime(500, audioCtx.currentTime, 0);
+    biquadFilter.gain.setTargetAtTime(25, audioCtx.currentTime, 0);
+    //biquadFilter.connect(audioCtx.destination);
+    track.connect(biquadFilter).connect(audioCtx.destination);
+  } else if (voiceSetting == "highshelf") {
+    convolver.disconnect(0);
+    biquadFilter.type = "highshelf";
+    biquadFilter.frequency.setTargetAtTime(1000, audioCtx.currentTime, 0);
+    biquadFilter.gain.setTargetAtTime(25, audioCtx.currentTime, 0);
+    //biquadFilter.connect(audioCtx.destination);
+    track.connect(biquadFilter).connect(audioCtx.destination);
+  } else if (voiceSetting == "lowfreq") {
+    convolver.disconnect(0);
+    biquadFilter.type = "lowpass";
+    biquadFilter.frequency.setTargetAtTime(800, audioCtx.currentTime, 0);
+    biquadFilter.Q.value = 10;
+    //biquadFilter.gain.setTargetAtTime(25, audioCtx.currentTime, 0);
+    //biquadFilter.detune.setTargetAtTime(100, audioCtx.currentTime, 0);
+    //biquadFilter.connect(audioCtx.destination);
+    track.connect(biquadFilter).connect(audioCtx.destination);
+  } else if (voiceSetting == "highfreq") {
+    convolver.disconnect(0);
+    biquadFilter.type = "highpass";
+    biquadFilter.frequency.setTargetAtTime(10000, audioCtx.currentTime, 0);
+    biquadFilter.Q.value = 20;
+    //biquadFilter.gain.setTargetAtTime(25, audioCtx.currentTime, 0);
+    //biquadFilter.detune.setTargetAtTime(20, audioCtx.currentTime, 0);
+    //biquadFilter.connect(audioCtx.destination);
+    track.connect(biquadFilter).connect(audioCtx.destination);
+  } else {
+    biquadFilter.disconnect(0);
+    console.log("Voice settings turned off");
+  }
 }
 
-var voiceSelect = document.getElementById("BiQuadFilter");
-voiceSelect.onchange = function (oEvent) {
-    onBiquadFilter();
+var shelfSelect = document.getElementById("BiQuadFilter");
+shelfSelect.onchange = function (oEvent) {
+  onBiquadFilter();
 };
 
 var conv = document.getElementById("property");
 conv.onchange = function (ocChange) {
-    if (ocChange.target.value === "reverb") {
-        biquadFilter.disconnect(0);
-        convolver.buffer = concertHallBuffer;
-        track.connect(convolver).connect(audioCtx.destination);
-    } else if (ocChange.target.value === "disablenormal") {
-        biquadFilter.disconnect(0);
-        //convolver.disconnect(0);
-        convolver.normalize = false;
-        track.connect(convolver).connect(audioCtx.destination);
-        //convolver.connect(audioCtx.destination);
-    } else {
-        console.log("No Property Selected");
-        convolver.disconnect(0);
-    }
-}
+  if (ocChange.target.value === "reverb") {
+    //biquadFilter.disconnect(0);
+    convolver.buffer = concertHallBuffer;
+    track.connect(biquadFilter).connect(convolver).connect(audioCtx.destination);
+    //convolver.connect(audioCtx.destination);
+  } else if (ocChange.target.value === "disablenormal") {
+    //biquadFilter.disconnect(0);
+    convolver.disconnect(0);
+    convolver.normalize = false;
+    convolver.buffer = concertHallBuffer;
+    track.connect(biquadFilter).connect(convolver).connect(audioCtx.destination);
+    //convolver.connect(audioCtx.destination);
+  } else {
+    console.log("No Property Selected");
+    convolver.disconnect(0);
+    track.connect(audioCtx.destination);
+  }
+};
 
 //*************** call for the Frequency Bar Graph ***********//
 
