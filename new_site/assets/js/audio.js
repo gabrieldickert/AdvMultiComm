@@ -440,7 +440,7 @@ function onBiquadFilter1() {
     //biquadFilter.detune.setTargetAtTime(100, audioCtx.currentTime, 0);
     //biquadFilter.connect(audioCtx.destination);
     track.connect(biquadFilter).connect(audioCtx.destination);
-  } else if (freqSetting == "highpass") {
+  } else if (freqSetting == "highfreq") {
     convolver.disconnect(0);
     biquadFilter.type = "highpass";
     biquadFilter.frequency.setTargetAtTime(10000, audioCtx.currentTime, 0);
@@ -458,17 +458,16 @@ function onBiquadFilter1() {
 var conv = document.getElementById("property");
 conv.onchange = function (ocChange) {
     if (ocChange.target.value === "reverb") {
-        biquadFilter.disconnect(0);
+        //biquadFilter.disconnect(0);
         convolver.buffer = concertHallBuffer;
-        track.connect(convolver).connect(audioCtx.destination);
+        track.connect(biquadFilter).connect(convolver).connect(audioCtx.destination);
         //convolver.connect(audioCtx.destination);
     } else if (ocChange.target.value === "disablenormal") {
-        biquadFilter.disconnect(0);
+        //biquadFilter.disconnect(0);
         convolver.disconnect(0);
         convolver.normalize = false;
-
         convolver.buffer = concertHallBuffer;
-        track.connect(convolver).connect(audioCtx.destination);
+        track.connect(biquadFilter).connect(convolver).connect(audioCtx.destination);
         //convolver.connect(audioCtx.destination);
     } else {
         console.log("No Property Selected");
