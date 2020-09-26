@@ -104,12 +104,16 @@ if (!isset($_GET["id"])) {
                                                         <tr>
                                                             <td id="filter"><b>BiQuadFilter:</b></td>     
                                                             <td> <select id ="BiQuadFilter" placeholder="BiQuadFilter">
-                                                                    <option value="lowfrequency">Low Frequency</option>
-                                                                    <option value="highfrequency" >High Frequency</option>
+                                                                    <option value="lowshelf">Low Shelf</option>
+                                                                    <option value="highshelf" >High Shelf</option>
                                                                     <option value="off" selected>Off</option>  
                                                                 </select>
                                                             </td>
-                                                            <td></td>
+                                                            <td><select id ="BiQuadFilterfreq" placeholder="BiQuadFilterfreq">
+                                                                    <option value="lowfreq">Low Frequency</option>
+                                                                    <option value="highfreq" >High Frequency</option>
+                                                                    <option value="off" selected>Off</option>  
+                                                                </select></td>
                                                         <tr>
                                                             <td id="bars"><b>Visualization:</b></td>
                                                             <td><select id="waves" placeholder="waves">

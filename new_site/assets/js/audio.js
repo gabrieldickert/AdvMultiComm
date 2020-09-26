@@ -396,16 +396,16 @@ function drawSinusWave() {
 //-----------Creating Biquad Filter Actions------------//
 function onBiquadFilter() {
     biquadFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0)
-    var voiceSetting = voiceSelect.value;
+    var voiceSetting = shelfSelect.value;
     console.log(voiceSetting);
-    if (voiceSetting == "lowfrequency") {
+    if (voiceSetting == "lowshelf") {
         convolver.disconnect(0);
         biquadFilter.type = "lowshelf";
         biquadFilter.frequency.setTargetAtTime(500, audioCtx.currentTime, 0)
         biquadFilter.gain.setTargetAtTime(25, audioCtx.currentTime, 0)
         //biquadFilter.connect(audioCtx.destination);
         track.connect(biquadFilter).connect(audioCtx.destination);
-    } else if (voiceSetting == "highfrequency") {
+    } else if (voiceSetting == "highshelf") {
         convolver.disconnect(0);
         biquadFilter.type = "highshelf";
         biquadFilter.frequency.setTargetAtTime(1000, audioCtx.currentTime, 0)
@@ -418,10 +418,42 @@ function onBiquadFilter() {
     }
 }
 
-var voiceSelect = document.getElementById("BiQuadFilter");
-voiceSelect.onchange = function (oEvent) {
+var shelfSelect = document.getElementById("BiQuadFilter");
+shelfSelect.onchange = function (oEvent) {
     onBiquadFilter();
 };
+
+var freqSelect = document.getElementById("BiQuadFilterfreq");
+freqSelect.onchange = function (oEvent) {
+  onBiquadFilter1();
+};
+
+function onBiquadFilter1() {
+  biquadFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0);
+  var freqSetting = freqSelect.value;
+  console.log(freqSetting);
+  if (freqSetting == "lowfreq") {
+    convolver.disconnect(0);
+    biquadFilter.type = "lowpass";
+    biquadFilter.frequency.setTargetAtTime(800, audioCtx.currentTime, 0);
+    biquadFilter.gain.setTargetAtTime(25, audioCtx.currentTime, 0);
+    //biquadFilter.detune.setTargetAtTime(100, audioCtx.currentTime, 0);
+    //biquadFilter.connect(audioCtx.destination);
+    track.connect(biquadFilter).connect(audioCtx.destination);
+  } else if (freqSetting == "highpass") {
+    convolver.disconnect(0);
+    biquadFilter.type = "highpass";
+    biquadFilter.frequency.setTargetAtTime(10000, audioCtx.currentTime, 0);
+    biquadFilter.gain.setTargetAtTime(25, audioCtx.currentTime, 0);
+    //biquadFilter.detune.setTargetAtTime(20, audioCtx.currentTime, 0);
+    //biquadFilter.connect(audioCtx.destination);
+    track.connect(biquadFilter).connect(audioCtx.destination);
+  } else {
+    biquadFilter.disconnect(0);
+    console.log("Voice settings turned off");
+  }
+}
+
 
 var conv = document.getElementById("property");
 conv.onchange = function (ocChange) {
