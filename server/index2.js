@@ -181,6 +181,7 @@ mic_server.listen(3001, () => {
 	console.log("Mic-Server running on Port 3001!");
 });
 
+
 var mic_rooms = [];
 var mic_data = [];
 var current_room = null;
@@ -190,29 +191,36 @@ const mic_ws = new WebsocketServer({httpServer: mic_server});
 mic_ws.on('request', function (request) {
     const c = request.accept(null, request.origin);
     c.on('message', function (message) {
-        
+        //    const x = message.utf8Data.split("|"); //example: c|channelID (to enter) ~ a|channelID|msg (to send msg)
+        // const cID = parseInt(x[0]);
 
         var buf = message['binaryData'];
         if (typeof buf !== 'undefined') {
-			const cID = 0;
-			if(mic_rooms.length < cID + 1) return;
-			for (var i = 0; i < mic_rooms[cID].length; i++) {
-				mic_rooms[cID][i].send(buf);
-			}
+            
+            //c.send(current_room);
+            c.send(buf);
         } else {
-			var x = message.utf8Data.split("|");
-			var cID = parseInt(x[1]);
+
+
+            let x = message.utf8Data.split("|");
+			console.log(x);
+            let room_id = x[1];
+
+
             switch (x[0]) {
                 case 'c': {
-					if (mic_rooms.length < cID + 1) {
-						mic_rooms.push([c]);
-					} else {
-						if(mic_rooms[cID].includes(c)) return;
-						mic_rooms[cID].push(c);
-					}						
+                    if (!mic_rooms.includes(room_id)) {
+                        mic_rooms.push(room_id);
+                    }
                     break;
 				}
+                case 'b': {
+                    current_room = mic_rooms[x[1]];
+					break;
+				}
             }
+
+            console.log("Error:" +current_room);
         }
     })
 });

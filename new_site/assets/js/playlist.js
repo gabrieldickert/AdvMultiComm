@@ -48,7 +48,7 @@ function gV(x) {
 	return (x < 10) ? ("0"+x) : x;
 }
 function playSong(name,p=-1,sync=true,seek=0) {
-	_player.src = "http://"+window.location.hostname+":3000/stream/"+name;
+	_player.src = "https://"+window.location.hostname+":3000/stream/"+name;
 	if(typeof convolverNode !== "undefined") convolverNode(_player.src);
 	if(seek != 0)
 	{

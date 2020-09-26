@@ -23,7 +23,7 @@ function escapeHtml(text) {
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
 }
-var websocket = new WebSocket("ws://"+window.location.host+":3000"); 
+var websocket = new WebSocket("wss://"+window.location.host+":3000"); 
 websocket.onopen = function(ev) {
 	document.getElementById("oIcon").src = "img/online.png";
 	websocket.send("c|"+channelID);
@@ -42,6 +42,10 @@ websocket.onmessage = function(ev) {
 		loadPlaylist();
 		showPlaylist();
 	}
+	/*if(c==6) {
+		pauseAudio();
+		return;
+	}*/
 	var data = ev.data.substr(1,ev.data.length);
 	switch(c)
 	{
@@ -58,6 +62,14 @@ websocket.onmessage = function(ev) {
 		case 2: {
 			var tmp = data.split("|");
 			playSong(tmp[0], tmp[1], false, tmp[2]);
+			break;
+		}
+		case 4: {
+			syncGainNode(data);
+			break;
+		}
+		case 5: {
+			syncPanning(data);
 			break;
 		}
 	}

@@ -31,11 +31,10 @@
 $('#audio-control-play-btn').on('click', function (e) {
 
     if (isPlaying) {
+		//websocket.send("z|" + channelID);
+		$(this).find("i").removeClass("fa fa-play");
 
-        $(this).find("i").removeClass("fa fa-play");
-
-        $(this).find("i").addClass("fa fa-pause");
-
+		$(this).find("i").addClass("fa fa-pause");
         pauseAudio();
 
     } else if (isPaused) {
@@ -47,7 +46,6 @@ $('#audio-control-play-btn').on('click', function (e) {
         websocket.send("s|" + channelID);
         resumeAudio();
     }
-
 });
 
 
@@ -88,7 +86,7 @@ $('#audio-control-unmute-btn').on('click', function (e) {
 /**
  * Draws the Progress of the Audio-Bar
  */
-/*$('#audio-time-progress-bar').on('click', function (e) {
+$('#audio-time-progress-bar').on('click', function (e) {
 
     //Clearing the current Intervall
     let canvasCtx = document.getElementById("audio-time-progress-bar").getContext('2d');
@@ -106,19 +104,40 @@ $('#audio-control-unmute-btn').on('click', function (e) {
     let audio_prz = track_duration / 100 * cax;
     let player = document.getElementById("player");
     player.currentTime = audio_prz;
-});*/
+});
 
 //calling the graph on the volume and changing the volume
 $('#volume_slider').on('input', function (e) {
-    var current_val = $('#volume_slider').val();
-    var applied_gain = current_val / 100;
-    gainNode.gain.value = applied_gain;
+    const current_val = $('#volume_slider').val()/100;
+	if(getParam("id") == getCookie("Admin"))
+	{
+		websocket.send("v|"+parseInt(getParam("id"))+"|"+current_val);
+	}
+	else syncGainNode(current_val);
 });
+
+
+function syncGainNode(value) {
+	$('#s0').text(Math.floor(value*100)+"%");
+	$('#volume_slider').val(value*100);
+	gainNode.gain.value = value;
+}
 
 
 $('#panner_slider').on('input', function (e) {
-    onPanningChanged($('#panner_slider').val());
+	const value = $('#panner_slider').val();
+	if(getParam("id") == getCookie("Admin"))
+	{
+		websocket.send("w|"+parseInt(getParam("id"))+"|"+value);
+		return;
+	}
+    else onPanningChanged(value);
 });
+
+function syncPanning(value) {
+	$('#panner_slider').val(value);
+	onPanningChanged(value);
+}
 
 /**
  *  adds a Panner to the AudioContext
@@ -132,12 +151,6 @@ function addPanerToAudioCtx() {
 
 $('#init-btn').on('click', function (e) {
     initAudioCtx();
-});
-
-$('#volume_slider').on('input', function (e) {
-    let current_val = $('#volume_slider').val();
-    let applied_gain = current_val / 100;
-    $('#s0').html(Math.floor(applied_gain * 100) + "%");
 });
 
 
@@ -162,7 +175,7 @@ function addVolumeToAudioCtx() {
 
 function onPanningChanged(value) {
     panner.pan.value = value;
-    $('#s1').html("" + value);
+    $('#s1').text("" + value);
     console.log(audioCtx);
 }
 
@@ -174,20 +187,14 @@ function initAudioCtx() {
     analyser = audioCtx.createAnalyser();
     //creating a biQuadFiltermethod for the BiquadFilterNode
     biquadFilter = audioCtx.createBiquadFilter();
-    
-    
-    //var c = new AudioContext();
-    //convolver = c.createConvolver();
-    //var b = c.createBuffer(1, 100, c.sampleRate);
-    //convolver= c;
-
+    convolver = audioCtx.createConvolver();
     isMuted = false;
     isPlaying = true;
     analyser.fftSize = 256;
     let audioElement = document.querySelector('audio');
     track = audioCtx.createMediaElementSource(audioElement);
-    $('#s1').html($('#panner_slider').val());
-    //convolver.buffer = audio;
+    $('#s1').text($('#panner_slider').val());
+    convolver.buffer = audio;
     //Adding Nodes to the Audiocontext
     addVolumeToAudioCtx();
     addPanerToAudioCtx();
@@ -216,27 +223,23 @@ function convolverNode(url) {
     ajaxRequest.open('GET', url, true);
     ajaxRequest.responseType = 'arraybuffer';
     console.log(url);
-    var audioData = ajaxRequest.response;
-    console.log(audioData);
-
     ajaxRequest.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-            audioData = this.response;
+            var audioData = this.response;
             audioCtx.decodeAudioData(audioData, function (buffer) {
-                convolver = audioCtx.createConvolver();
                 soundSource = audioCtx.createBufferSource();
-                soundSource.buffer = buffer;
-                //convolver.buffer = buffer;
                 concertHallBuffer = buffer;
-            }, function (e) { console.log("Error with decoding audio data" + e.err); });
-
-        } //soundSource.connect(audioCtx.destination);
-        //soundSource.loop = true;
-        //soundSource.start();
+                //convolver.buffer = concertHallBuffer;
+                soundSource.buffer=concertHallBuffer;
+            }, function (e) {
+                console.log("Error with decoding audio data" + e.err);
+            });
+        }
     };
+
     ajaxRequest.send();
 
-}   
+}
 
 function onOscillation() {
 
@@ -361,7 +364,7 @@ function drawAudioProgressBar() {
 function drawSinusWave() {
     sinuswave_interval_id = setInterval(function (e) {
         console.log("SINUS");
-        let WIDTH = 600;
+        let WIDTH = 300;
         let HEIGHT = 400;
         let canvasCtx = document.getElementById("audio_visual_player").getContext('2d');
         analyser.fftSize = 2048;
@@ -396,16 +399,16 @@ function drawSinusWave() {
 //-----------Creating Biquad Filter Actions------------//
 function onBiquadFilter() {
     biquadFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0)
-    var voiceSetting = shelfSelect.value;
+    var voiceSetting = voiceSelect.value;
     console.log(voiceSetting);
-    if (voiceSetting == "lowshelf") {
+    if (voiceSetting == "lowfrequency") {
         convolver.disconnect(0);
         biquadFilter.type = "lowshelf";
         biquadFilter.frequency.setTargetAtTime(500, audioCtx.currentTime, 0)
         biquadFilter.gain.setTargetAtTime(25, audioCtx.currentTime, 0)
         //biquadFilter.connect(audioCtx.destination);
         track.connect(biquadFilter).connect(audioCtx.destination);
-    } else if (voiceSetting == "highshelf") {
+    } else if (voiceSetting == "highfrequency") {
         convolver.disconnect(0);
         biquadFilter.type = "highshelf";
         biquadFilter.frequency.setTargetAtTime(1000, audioCtx.currentTime, 0)
@@ -418,61 +421,26 @@ function onBiquadFilter() {
     }
 }
 
-var shelfSelect = document.getElementById("BiQuadFilter");
-shelfSelect.onchange = function (oEvent) {
+var voiceSelect = document.getElementById("BiQuadFilter");
+voiceSelect.onchange = function (oEvent) {
     onBiquadFilter();
 };
-
-var freqSelect = document.getElementById("BiQuadFilterfreq");
-freqSelect.onchange = function (oEvent) {
-  onBiquadFilter1();
-};
-
-function onBiquadFilter1() {
-  biquadFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0);
-  var freqSetting = freqSelect.value;
-  console.log(freqSetting);
-  if (freqSetting == "lowfreq") {
-    convolver.disconnect(0);
-    biquadFilter.type = "lowpass";
-    biquadFilter.frequency.setTargetAtTime(800, audioCtx.currentTime, 0);
-    biquadFilter.gain.setTargetAtTime(25, audioCtx.currentTime, 0);
-    //biquadFilter.detune.setTargetAtTime(100, audioCtx.currentTime, 0);
-    //biquadFilter.connect(audioCtx.destination);
-    track.connect(biquadFilter).connect(audioCtx.destination);
-  } else if (freqSetting == "highfreq") {
-    convolver.disconnect(0);
-    biquadFilter.type = "highpass";
-    biquadFilter.frequency.setTargetAtTime(10000, audioCtx.currentTime, 0);
-    biquadFilter.gain.setTargetAtTime(25, audioCtx.currentTime, 0);
-    //biquadFilter.detune.setTargetAtTime(20, audioCtx.currentTime, 0);
-    //biquadFilter.connect(audioCtx.destination);
-    track.connect(biquadFilter).connect(audioCtx.destination);
-  } else {
-    biquadFilter.disconnect(0);
-    console.log("Voice settings turned off");
-  }
-}
-
 
 var conv = document.getElementById("property");
 conv.onchange = function (ocChange) {
     if (ocChange.target.value === "reverb") {
-        //biquadFilter.disconnect(0);
+        biquadFilter.disconnect(0);
         convolver.buffer = concertHallBuffer;
-        track.connect(biquadFilter).connect(convolver).connect(audioCtx.destination);
-        //convolver.connect(audioCtx.destination);
+        track.connect(convolver).connect(audioCtx.destination);
     } else if (ocChange.target.value === "disablenormal") {
-        //biquadFilter.disconnect(0);
-        convolver.disconnect(0);
+        biquadFilter.disconnect(0);
+        //convolver.disconnect(0);
         convolver.normalize = false;
-        convolver.buffer = concertHallBuffer;
-        track.connect(biquadFilter).connect(convolver).connect(audioCtx.destination);
+        track.connect(convolver).connect(audioCtx.destination);
         //convolver.connect(audioCtx.destination);
     } else {
         console.log("No Property Selected");
         convolver.disconnect(0);
-        track.connect(audioCtx.destination);
     }
 }
 
@@ -492,7 +460,7 @@ clearRectangle();
 var visualSelect = document.getElementById("waves");
 var visualConv = document.getElementById("convolverwave");
 visualSelect.onchange = function (visEvent) {
-    var WIDTH = 600;
+    var WIDTH = 300;
     var HEIGHT = 400;
     if (visEvent.target.value === "frequencybars")
             //selecting the waves function: Frequecy wave or sinuswave
@@ -513,7 +481,7 @@ visualSelect.onchange = function (visEvent) {
 
 function clearRectangle() {
     let canvasCtx = document.getElementById("audio_visual_player").getContext('2d');
-    canvasCtx.clearRect(0, 0, 600, 400);
+    canvasCtx.clearRect(0, 0, 300, 400);
 }
 
 /**
@@ -523,7 +491,7 @@ function clearRectangle() {
 function drawSound(dataArray) {
     let canvasCtx = document.getElementById("audio_visual_player").getContext('2d');
     canvasCtx.fillStyle = 'rgb(0, 0, 0)';
-    canvasCtx.fillRect(0, 0, 600, 400);
+    canvasCtx.fillRect(0, 0, 300, 400);
     analyser.fftSize = 256;
     let bufferLength = 128;
     var barWidth = (300 / bufferLength) * 2.5;
@@ -543,7 +511,7 @@ function drawSound(dataArray) {
  * Stops the Audio
  * 
  */
-function pauseAudio() {
+function pauseAudio() {	
     audioCtx.suspend();
     isPlaying = false;
     isPaused = true;
@@ -626,3 +594,5 @@ $('#nerd-stats-btn').on('click', function (e) {
         }
     });
 });
+
+initializeGraphs();

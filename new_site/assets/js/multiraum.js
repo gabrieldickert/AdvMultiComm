@@ -15,7 +15,7 @@ function createRoom() {
 	}
 	$.ajax({
 		type: "POST",
-		url: 'http://'+window.location.hostname+':3000/rooms',
+		url: 'https://'+window.location.hostname+':3000/rooms',
 		data: JSON.stringify( { name: raum_name.value, info: raum_beschreibung.value } ),
 		contentType: "application/json; charset=utf-8",
 		dataType: "json"
@@ -32,7 +32,7 @@ function refresh_rooms() {
 		headers: {
 			'Content-Type': 'application/x-www-form-urlencoded'
 		},
-		url: 'http://'+window.location.hostname+':3000/rooms',
+		url: 'https://'+window.location.hostname+':3000/rooms',
 		success: function(data) {
 			var infos = JSON.parse(data);
 			cards.innerHTML = '';
@@ -46,7 +46,7 @@ function refresh_rooms() {
 
 function addCard(name, title, x) {
 	cards.innerHTML += '<div class="card" style="width: 18rem;"> \
-<img class="card-img-top" src="img/note.png" height="250px" alt="Card image cap"> \
+<img class="card-img-top" src="img/note.png" alt="Card image cap"> \
   <div class="card-body"> \
     <h5 class="card-title">'+name+'</h5>\
     <p class="card-text">'+title+'</p>\
