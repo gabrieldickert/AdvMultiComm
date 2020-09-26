@@ -105,11 +105,7 @@ if (!isset($_GET["id"])) {
                                                             <td id="filter"><b>BiQuadFilter:</b></td>     
                                                             <td> <select id ="BiQuadFilter" placeholder="BiQuadFilter">
                                                                     <option value="lowshelf">Low Shelf</option>
-                                                                    <option value="highshelf" >High Shelf</option>
-                                                                    <option value="off" selected>Off</option>  
-                                                                </select>
-                                                            </td>
-                                                            <td><select id ="BiQuadFilterfreq" placeholder="BiQuadFilterfreq">
+                                                                    <option value="highshelf" >High Shelf</option> 
                                                                     <option value="lowfreq">Low Frequency</option>
                                                                     <option value="highfreq" >High Frequency</option>
                                                                     <option value="off" selected>Off</option>  
