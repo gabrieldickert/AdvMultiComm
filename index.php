@@ -41,7 +41,7 @@ $project = 'AdvMultiComm';
 
             <div class="row">
                 <div class="col-lg-12">
-                    <div class=playlist">
+                    <div class="playlist">
                         <i class="fa fa-plus plus" style=""data-toggle="modal" data-target="#playlistModal"></i>
                         <h3>Playlist</h3>
                         <hr>
