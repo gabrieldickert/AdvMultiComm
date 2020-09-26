@@ -1,8 +1,7 @@
-var ws_mic = new WebSocket("ws://" + window.location.host + ":3001");
+var ws_mic = new WebSocket("wss://" + window.location.host + ":3001");
 ws_mic.onopen = function (ev) {
 
     ws_mic.send("m|" + "sss");
-
 
 };
 

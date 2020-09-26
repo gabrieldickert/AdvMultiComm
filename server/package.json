@@ -12,6 +12,7 @@
   "dependencies": {
     "blob-to-stream": "^1.0.3",
     "express": "^4.17.1",
+    "https": "^1.0.0",
     "mediaserver": "^0.1.1",
     "websocket": "^1.0.31"
   }

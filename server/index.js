@@ -4,6 +4,11 @@ const path = require("path");
 const fs = require("fs");
 const mediaserver = require("mediaserver");
 
+
+app.get('/', function (req, res) {
+  res.send('hello world')
+});
+
 /*
  app.get("/", function(req, res) {
  var html = fs.readFileSync("./index.html", "utf8");
@@ -13,7 +18,7 @@ const mediaserver = require("mediaserver");
 
 app.use(function (req, res, next) {
     // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost');
+    res.setHeader('Access-Control-Allow-Origin', '*');
 
     // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -60,9 +65,20 @@ app.get("/stream/:song", function (req, res) {
     mediaserver.pipe(req, res, 'music/' + req.params.song);
 });
 
-const server = app.listen(3000, function () {
-    console.log("Server running on Port 3000!");
+const https = require('https');
+
+const key = fs.readFileSync('C:/Certbot/archive/ai-robot.ddns.net/privkey1.pem');
+const cert = fs.readFileSync('C:/Certbot/archive/ai-robot.ddns.net/cert1.pem');
+const options = {
+  key: key,
+  cert: cert
+};
+const server = https.createServer(options, app);
+
+server.listen(3000, () => {
+	console.log("Server running on Port 3000!");
 });
+
 
 //Room Info
 var room_info = [];
@@ -159,13 +175,11 @@ wsServer.on('request', function (request) {
     });
 });
 
-const mic_server = app.listen(3001, function () {
+const mic_server = https.createServer(options, app);
 
-
-    console.log("Mic Server running on Port 3001");
+mic_server.listen(3001, () => {
+	console.log("Mic-Server running on Port 3001!");
 });
-
-
 
 var mic_rooms = [];
 var mic_data = [];

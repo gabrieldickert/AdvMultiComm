@@ -15,7 +15,7 @@ function createRoom() {
 	}
 	$.ajax({
 		type: "POST",
-		url: 'http://'+window.location.hostname+':3000/rooms',
+		url: 'https://'+window.location.hostname+':3000/rooms',
 		data: JSON.stringify( { name: raum_name.value, info: raum_beschreibung.value } ),
 		contentType: "application/json; charset=utf-8",
 		dataType: "json"
@@ -32,7 +32,7 @@ function refresh_rooms() {
 		headers: {
 			'Content-Type': 'application/x-www-form-urlencoded'
 		},
-		url: 'http://'+window.location.hostname+':3000/rooms',
+		url: 'https://'+window.location.hostname+':3000/rooms',
 		success: function(data) {
 			var infos = JSON.parse(data);
 			cards.innerHTML = '';

@@ -23,7 +23,7 @@ function escapeHtml(text) {
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
 }
-var websocket = new WebSocket("ws://"+window.location.host+":3000"); 
+var websocket = new WebSocket("wss://"+window.location.host+":3000"); 
 websocket.onopen = function(ev) {
 	document.getElementById("oIcon").src = "img/online.png";
 	websocket.send("c|"+channelID);
