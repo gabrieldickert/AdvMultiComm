@@ -454,14 +454,14 @@ conv.onchange = function (ocChange) {
   if (ocChange.target.value === "reverb") {
     //biquadFilter.disconnect(0);
     convolver.buffer = concertHallBuffer;
-    track.connect(biquadFilter).connect(convolver).connect(audioCtx.destination);
+    track.connect(convolver).connect(biquadFilter).connect(audioCtx.destination);
     //convolver.connect(audioCtx.destination);
   } else if (ocChange.target.value === "disablenormal") {
     //biquadFilter.disconnect(0);
     convolver.disconnect(0);
     convolver.normalize = false;
     convolver.buffer = concertHallBuffer;
-    track.connect(biquadFilter).connect(convolver).connect(audioCtx.destination);
+    track.connect(convolver).connect(biquadFilter).connect(audioCtx.destination);
     //convolver.connect(audioCtx.destination);
   } else {
     console.log("No Property Selected");
