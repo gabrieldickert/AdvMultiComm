@@ -381,7 +381,7 @@ function drawSinusWave() {
         canvasCtx.fillStyle = 'rgb(200, 200, 200)';
         canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
         canvasCtx.lineWidth = 2;
-        canvasCtx.strokeStyle = 'rgb(255, 0, 0)';
+        canvasCtx.strokeStyle = 'rgb(170, 0, 0)';
         canvasCtx.beginPath();
         var sliceWidth = WIDTH * 1.0 / bufferLength;
         var x = 0;
